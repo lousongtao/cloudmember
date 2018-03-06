@@ -38,6 +38,12 @@ public class MemberConsumption {
 	@ManyToOne
 	private Member member;
 
+	/**
+	 * 修改后客户最新的余额
+	 */
+	@Column(nullable=false)
+	private double newValue;
+	
 	public int getId() {
 		return id;
 	}
@@ -84,6 +90,14 @@ public class MemberConsumption {
 
 	public void setMember(Member member) {
 		this.member = member;
+	}
+
+	public double getNewValue() {
+		return newValue;
+	}
+
+	public void setNewValue(double newValue) {
+		this.newValue = newValue;
 	}
 
 	@Override

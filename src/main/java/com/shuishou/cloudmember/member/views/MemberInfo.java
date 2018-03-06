@@ -24,4 +24,6 @@ public class MemberInfo {
 	public String createTime;
 	
 	public String lastModifyTime;
+	
+	public String password;
 }

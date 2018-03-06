@@ -36,6 +36,8 @@ public class Member {
 	
 	private double discountRate = 1;
 	
+	private String password;
+	
 	@JsonFormat(pattern=ConstantValue.DATE_PATTERN_YMDHMS, timezone = "GMT+8:00")
 	private Date birth;
 	
@@ -54,6 +56,14 @@ public class Member {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Date getBirth() {

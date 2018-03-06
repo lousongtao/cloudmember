@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Lists;
+import com.shuishou.cloudmember.ConstantValue;
 import com.shuishou.cloudmember.models.BaseDataAccessor;
 
 @Repository
@@ -88,26 +89,47 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 
 	@Override
 	public void createMemberTableByCustomer(String customerName){
-		String stmt_member = "CREATE TABLE `member_"+customerName+"` (`id` int(11) NOT NULL AUTO_INCREMENT,`address` varchar(255) DEFAULT NULL, "
-				+ "`balanceMoney` double DEFAULT '0',`birth` datetime DEFAULT NULL,`createTime` datetime NOT NULL,`discountRate` double DEFAULT '1', "
-				+ "`memberCard` varchar(255) NOT NULL,`name` varchar(255) NOT NULL,`postCode` varchar(255) DEFAULT NULL,`score` double DEFAULT '0', "
+		String stmt_member = "CREATE TABLE `" + ConstantValue.DATABASE +"`.`member_"+customerName+"` ("
+				+ "`id` int(11) NOT NULL AUTO_INCREMENT,"
+				+ "`address` varchar(255) DEFAULT NULL, "
+				+ "`balanceMoney` double DEFAULT '0',"
+				+ "`birth` datetime DEFAULT NULL,"
+				+ "`createTime` datetime NOT NULL,"
+				+ "`discountRate` double DEFAULT '1', "
+				+ "`memberCard` varchar(255) NOT NULL,"
+				+ "`name` varchar(255) NOT NULL,"
+				+ "`postCode` varchar(255) DEFAULT NULL,"
+				+ "`score` double DEFAULT '0', "
 				+ "`telephone` varchar(255) DEFAULT NULL, "
+				+ "`password` varchar(255) DEFAULT NULL, "
 				+ "PRIMARY KEY (`id`), "
-				+ "UNIQUE KEY `UK_membercard_"+ customerName + "` (`memberCard`) "
+				+ "UNIQUE KEY `UK_membercard_"+ customerName + "` (`memberCard`), "
 				+ "KEY `IDX_membername_"+ customerName + "` (`name`) "
-				+ ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
-		String stmt_member_consum = "CREATE TABLE `member_consumption_"+customerName+"` (`id` int(11) NOT NULL AUTO_INCREMENT,`amount` double NOT NULL,"
-				+ "`date` datetime NOT NULL,`place` varchar(255) NOT NULL,`type` int(11) NOT NULL,`member_id` int(11) DEFAULT NULL,"
+				+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+		String stmt_member_consum = "CREATE TABLE `" + ConstantValue.DATABASE +"`.`member_balance_"+customerName+"` ("
+				+ "`id` int(11) NOT NULL AUTO_INCREMENT,"
+				+ "`amount` double NOT NULL,"
+				+ "`date` datetime NOT NULL,"
+				+ "`newValue` double NOT NULL, "
+				+ "`place` varchar(255) NOT NULL,"
+				+ "`type` int(11) NOT NULL,"
+				+ "`member_id` int(11) DEFAULT NULL, "
 				+ "PRIMARY KEY (`id`),"
 				+ "KEY `FK_consum_memberid_" + customerName + "` (`member_id`),"
 				+ "CONSTRAINT `FK_consum_memberid_"+customerName+"` FOREIGN KEY (`member_id`) REFERENCES `member_"+customerName+"` (`id`)"
 				+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-		String stmt_member_score = "CREATE TABLE `member_score_"+customerName+"` (`id` int(11) NOT NULL AUTO_INCREMENT,`amount` double NOT NULL,"
-				+ "`date` datetime NOT NULL,`place` varchar(255) NOT NULL,`type` int(11) NOT NULL,`member_id` int(11) DEFAULT NULL,"
+		String stmt_member_score = "CREATE TABLE `" + ConstantValue.DATABASE +"`.`member_score_"+customerName+"` ("
+				+ "`id` int(11) NOT NULL AUTO_INCREMENT,"
+				+ "`amount` double NOT NULL,"
+				+ "`date` datetime NOT NULL,"
+				+ "`newValue` double NOT NULL, "
+				+ "`place` varchar(255) NOT NULL,"
+				+ "`type` int(11) NOT NULL,"
+				+ "`member_id` int(11) DEFAULT NULL, "
 				+ "PRIMARY KEY (`id`),"
 				+ "KEY `FK_score_memberid_"+customerName+"` (`member_id`),"
 				+ "CONSTRAINT `FK_score_memberid_"+customerName+"` FOREIGN KEY (`member_id`) REFERENCES `member_"+customerName+"` (`id`)"
-				+ ") ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;";
+				+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 		sessionFactory.getCurrentSession().createSQLQuery(stmt_member).executeUpdate();
 		sessionFactory.getCurrentSession().createSQLQuery(stmt_member_consum).executeUpdate();
 		sessionFactory.getCurrentSession().createSQLQuery(stmt_member_score).executeUpdate();

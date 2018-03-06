@@ -55,6 +55,16 @@ public class MemberController extends BaseController {
 		
 	}
 	
+	@RequestMapping(value = "/member/querymemberhazily", method = {RequestMethod.POST, RequestMethod.GET})
+	public @ResponseBody MemberListResult queryMember(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "key", required = true) String key) throws Exception{
+		MemberListResult result = memberService.queryMemberHazily(customerName, key);
+		
+		return result;
+		
+	}
+	
 	@RequestMapping(value = "/member/queryallmember", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody MemberListResult queryAllMember(
 			@RequestParam(value = "customerName", required = true) String customerName) throws Exception{
@@ -65,6 +75,20 @@ public class MemberController extends BaseController {
 		
 	}
 	
+	@RequestMapping(value = "/member/querymemberscore", method = {RequestMethod.POST})
+	public @ResponseBody ObjectListResult queryMemberScore(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "memberId", required = true) int memberId) throws Exception{
+			return memberService.queryMemberScore(customerName, memberId);
+	}
+	
+	@RequestMapping(value = "/member/querymemberbalance", method = {RequestMethod.POST})
+	public @ResponseBody ObjectListResult queryMemberBalance(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "memberId", required = true) int memberId) throws Exception{
+			return memberService.queryMemberBalance(customerName, memberId);
+	}
+	
 	@RequestMapping(value = "/member/addmember", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody MemberResult addMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
@@ -73,6 +97,7 @@ public class MemberController extends BaseController {
 			@RequestParam(value = "address", required = false, defaultValue = "") String address, 
 			@RequestParam(value = "postCode", required = false, defaultValue = "") String postCode, 
 			@RequestParam(value = "telephone", required = false, defaultValue = "") String telephone,
+			@RequestParam(value = "password", required = false, defaultValue = "") String password,
 			@RequestParam(value = "discountRate", required = true) double discountRate,
 			@RequestParam(value = "birth", required = false, defaultValue = "") String sBirth) throws Exception{
 		Date birth = null;
@@ -80,7 +105,7 @@ public class MemberController extends BaseController {
 			birth = ConstantValue.DFYMD.parse(sBirth);
 		}
 		try{
-			MemberResult result = memberService.addMember(customerName, name, memberCard, address, postCode, telephone, birth, discountRate);
+			MemberResult result = memberService.addMember(customerName, name, memberCard, address, postCode, telephone, birth, discountRate, password);
 		
 			return result;
 		} catch(Exception e){
@@ -156,8 +181,24 @@ public class MemberController extends BaseController {
 			@RequestParam(value = "byDeposit", required = true) boolean byDeposit,
 			@RequestParam(value = "branchName", required = true) String branchName,
 			@RequestParam(value = "memberCard", required = true) String memberCard,
-			@RequestParam(value = "byScore", required = true) boolean byScore,
-			@RequestParam(value = "byBalance", required = true) boolean byBalance) throws Exception{
-		return memberService.recordMemberConsumption(customerName, memberCard, consumptionPrice, byScore, scorePerDollar, byDeposit, branchName);
+			@RequestParam(value = "memberPassword", required = false) String memberPassword,
+			@RequestParam(value = "byScore", required = true) boolean byScore) throws Exception{
+		return memberService.recordMemberConsumption(customerName, memberCard, memberPassword, consumptionPrice, byScore, scorePerDollar, byDeposit, branchName);
+	}
+	
+	@RequestMapping(value = "/member/updatememberpassword", method = {RequestMethod.POST})
+	public @ResponseBody MemberResult updateMemberPassword(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "id", required = true) int id,
+			@RequestParam(value = "oldPassword", required = true) String oldPassword,
+			@RequestParam(value = "newPassword", required = true) String newPassword) throws Exception{
+			return memberService.updateMemberPassword(customerName, id, oldPassword, newPassword);
+	}
+	
+	@RequestMapping(value = "/member/resetmemberpassword111111", method = {RequestMethod.POST})
+	public @ResponseBody MemberResult resetMemberPassword111111(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "id", required = true) int id) throws Exception{
+			return memberService.resetMemberPassword111111(customerName, id);
 	}
 }

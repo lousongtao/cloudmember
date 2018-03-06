@@ -37,6 +37,12 @@ public class MemberScore {
 	private Member member;
 	
 	/**
+	 * 修改后客户最新的余额
+	 */
+	@Column(nullable=false)
+	private double newValue;
+	
+	/**
 	 * record the consume shop location
 	 */
 	@Column(nullable=false)
@@ -88,6 +94,14 @@ public class MemberScore {
 
 	public void setMember(Member member) {
 		this.member = member;
+	}
+
+	public double getNewValue() {
+		return newValue;
+	}
+
+	public void setNewValue(double newValue) {
+		this.newValue = newValue;
 	}
 
 	@Override

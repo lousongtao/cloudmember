@@ -35,7 +35,7 @@ INSERT INTO `cloudmember`.`user` (`id`,`hashed_password`, `username`) VALUES ('1
 INSERT INTO `cloudmember`.`permission` (`id`, `name`) VALUES ('1', 'CREATE_USER'); 
 INSERT INTO `cloudmember`.`permission` (`id`, `name`) VALUES ('2', 'QUERY_USER'); 
 INSERT INTO `cloudmember`.`permission` (`id`, `name`) VALUES ('3', 'DISABLE_CUSTOMER'); 
-INSERT INTO `cloudmember`.`permission` (`id`, `name`) VALUES ('4', 'CREATE_CUSTOMER');
+INSERT INTO `cloudmember`.`permission` (`id`, `name`) VALUES ('4', 'ADD_CUSTOMER');
 
 INSERT INTO `cloudmember`.`user_permission` (`permission_id`, `user_id`) VALUES ('1', '1'); 
 INSERT INTO `cloudmember`.`user_permission` (`permission_id`, `user_id`) VALUES ('2', '1'); 
