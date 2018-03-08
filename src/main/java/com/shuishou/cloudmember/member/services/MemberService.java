@@ -46,7 +46,7 @@ public class MemberService implements IMemberService{
 		m.telephone=telephone;
 		m.birth = birth == null ? null :ConstantValue.DFYMD.format(birth);
 		m.discountRate =discountRate;
-		m.createTime = ConstantValue.DFYMD.format(new Date());
+		m.createTime = ConstantValue.DFYMDHMS.format(new Date());
 		
 		String sql_field = "insert into member_" + customerName + "(name, memberCard, discountRate, createTime";
 		String sql_value = " values ( '" + name + "', '" + memberCard + "'," + discountRate + ", ?";
@@ -196,7 +196,7 @@ public class MemberService implements IMemberService{
 			m.address = (String)os[1];
 			m.balanceMoney = (double)os[2];
 			m.birth = os[3] == null ? null :ConstantValue.DFYMD.format(os[3]);
-			m.createTime = ConstantValue.DFYMD.format(os[4]);
+			m.createTime = ConstantValue.DFYMDHMS.format(os[4]);
 			m.discountRate = (double)os[5];
 			m.memberCard = (String)os[6];
 			m.name = (String)os[7];
@@ -324,7 +324,7 @@ public class MemberService implements IMemberService{
 		m.telephone=telephone;
 		m.birth = birth == null ? null :ConstantValue.DFYMD.format(birth);
 		m.discountRate =discountRate;
-		m.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
+		m.createTime = ConstantValue.DFYMDHMS.format(member.getCreateTime());
 		m.id = id;
 		m.score = member.getScore();
 		m.balanceMoney = member.getBalanceMoney();
@@ -374,9 +374,9 @@ public class MemberService implements IMemberService{
 		m.address=member.getAddress();
 		m.postCode=member.getAddress();
 		m.telephone=member.getTelephone();
-		m.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		m.birth = member.getBirth() == null ? null :ConstantValue.DFYMD.format(member.getBirth());
 		m.discountRate =member.getDiscountRate();
-		m.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
+		m.createTime = ConstantValue.DFYMDHMS.format(member.getCreateTime());
 		m.id = id;
 		m.score = newScore;
 		m.balanceMoney = member.getBalanceMoney();
@@ -424,9 +424,9 @@ public class MemberService implements IMemberService{
 		m.address=member.getAddress();
 		m.postCode=member.getAddress();
 		m.telephone=member.getTelephone();
-		m.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		m.birth = member.getBirth() == null ? null :ConstantValue.DFYMD.format(member.getBirth());
 		m.discountRate =member.getDiscountRate();
-		m.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
+		m.createTime = ConstantValue.DFYMDHMS.format(member.getCreateTime());
 		m.id = id;
 		m.score = member.getScore();
 		m.balanceMoney = newBalance;
@@ -475,9 +475,9 @@ public class MemberService implements IMemberService{
 		m.address=member.getAddress();
 		m.postCode=member.getAddress();
 		m.telephone=member.getTelephone();
-		m.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		m.birth = member.getBirth() == null ? null :ConstantValue.DFYMD.format(member.getBirth());
 		m.discountRate =member.getDiscountRate();
-		m.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
+		m.createTime = ConstantValue.DFYMDHMS.format(member.getCreateTime());
 		m.id = id;
 		m.score = member.getScore();
 		m.balanceMoney = oldBalance + rechargeValue;
