@@ -13,6 +13,7 @@ public interface IMemberService {
 	MemberResult addMember(String customerName, String name, String memberCard, String address, String postCode, String telephone, Date birth, double discountRate, String password);
 	MemberResult updateMember(String customerName, int id, String name, String memberCard, String address, String postCode, String telephone, Date birth,double discountRate);
 	MemberResult updateMemberScore(String customerName, int id, double newScore);
+	MemberResult updateMemberDiscountRate(String customerName, int id, double discountRate);
 	MemberResult updateMemberBalance(String customerName, int id, double newBalance);
 	MemberResult resetMemberPassword111111(String customerName, int id);
 	MemberResult updateMemberPassword(String customerName, int id, String oldPassword, String newPassword);

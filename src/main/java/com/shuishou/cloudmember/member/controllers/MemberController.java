@@ -151,7 +151,6 @@ public class MemberController extends BaseController {
 		MemberResult result = memberService.updateMemberScore(customerName, id, newScore);
 		
 		return result;
-		
 	}
 	
 	@RequestMapping(value = "/member/updatememberbalance", method = {RequestMethod.GET, RequestMethod.POST})
@@ -162,7 +161,16 @@ public class MemberController extends BaseController {
 		MemberResult result = memberService.updateMemberBalance(customerName, id, newBalance);
 		
 		return result;
+	}
+	
+	@RequestMapping(value = "/member/updatememberdiscountrate", method = {RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody MemberResult updateMemberDiscountRate(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "id", required = true) int id,
+			@RequestParam(value = "discountRate", required = true) double discountRate) throws Exception{
+		MemberResult result = memberService.updateMemberDiscountRate(customerName, id, discountRate);
 		
+		return result;
 	}
 	
 	@RequestMapping(value = "/member/memberrecharge", method = {RequestMethod.GET, RequestMethod.POST})

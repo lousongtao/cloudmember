@@ -38,6 +38,7 @@ public class MemberService implements IMemberService{
 	@Override
 	public MemberResult addMember(String customerName, String name, String memberCard, String address, String postCode,
 			String telephone, Date birth, double discountRate, String password) {
+		long l1 = System.currentTimeMillis();
 		MemberInfo m = new MemberInfo();
 		m.name = name;
 		m.memberCard = memberCard;
@@ -94,12 +95,14 @@ public class MemberService implements IMemberService{
 			session.close();
 		}
 		
-		log.debug("add member : " + name + " for customer " + customerName);
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + "ms consume, add " + customerName + ".member : " + name + " for customer " + customerName);
 		return new MemberResult(Result.OK, true, m);
 	}
 	
 	@Override
 	public MemberListResult queryMember(String customerName, String name, String memberCard, String address, String postCode, String telephone) {
+		long l1 = System.currentTimeMillis();
 		String sql_where = " where ";
 		if (name != null && name.length() > 0){
 			if (sql_where.length() > 10)
@@ -134,6 +137,9 @@ public class MemberService implements IMemberService{
 		try{
 			List ms = query.list();
 			ArrayList<MemberInfo> members = assembleMemberObject(ms);
+			long l2 = System.currentTimeMillis();
+			log.debug((l2 - l1) + "ms consume, query "+customerName+".member by name : " + name + ", memberCard : " + memberCard
+					+ ", address : " + address + ", postCode : " + postCode + ", telephone : " + telephone);
 			return new MemberListResult(Result.OK, true, members);
 		} catch(Exception e){
 			tx.rollback();
@@ -143,6 +149,7 @@ public class MemberService implements IMemberService{
 		} finally{
 			session.close();
 		}
+		
 	}
 	
 	/**
@@ -169,6 +176,7 @@ public class MemberService implements IMemberService{
 	
 	@Override
 	public MemberListResult queryMemberHazily(String customerName, String key) {
+		long l1 = System.currentTimeMillis();
 		String whereClause = " where name like '%" + key + "%' or memberCard like '%" + key + "%' or telephone like '%" + key + "%'";
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -176,6 +184,8 @@ public class MemberService implements IMemberService{
 		try{
 			List ms = query.list();
 			ArrayList<MemberInfo> members = assembleMemberObject(ms);
+			long l2 = System.currentTimeMillis();
+			log.debug((l2 - l1) + "ms consume, query "+customerName+".member by key : " + key);
 			return new MemberListResult(Result.OK, true, members);
 		} catch(Exception e){
 			tx.rollback();
@@ -230,6 +240,7 @@ public class MemberService implements IMemberService{
 	
 	@Override
 	public MemberListResult queryAllMember(String customerName) {
+		long l1 = System.currentTimeMillis();
 		String whereClause = "";
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
@@ -237,6 +248,8 @@ public class MemberService implements IMemberService{
 		try{
 			List ms = query.list();
 			ArrayList<MemberInfo> members = assembleMemberObject(ms);
+			long l2 = System.currentTimeMillis();
+			log.debug((l2 - l1) + "ms consume, query all "+customerName+".member");
 			return new MemberListResult(Result.OK, true, members);
 		} catch(Exception e){
 			tx.rollback();
@@ -287,6 +300,7 @@ public class MemberService implements IMemberService{
 	@Override
 	public MemberResult updateMember(String customerName, int id, String name, String memberCard, String address,
 			String postCode, String telephone, Date birth, double discountRate) {
+		long l1 = System.currentTimeMillis();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String sql = "update member_" + customerName + " set name = '" + name + "', memberCard='" + memberCard
@@ -329,7 +343,8 @@ public class MemberService implements IMemberService{
 		m.score = member.getScore();
 		m.balanceMoney = member.getBalanceMoney();
 		
-		log.debug(" update member info to name : " + name
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + " ms consume, update " + customerName + ".member info to name : " + name
 				+ ", memberCard : " + memberCard + ", address : " + address + ", postCode : "+ postCode + ", telephone : "+ telephone
 				+ ", birth" + (birth == null ? "": ConstantValue.DFYMD.format(birth)));
 		return new MemberResult(Result.OK, true, m);
@@ -337,6 +352,7 @@ public class MemberService implements IMemberService{
 	
 	@Override
 	public MemberResult updateMemberScore(String customerName, int id, double newScore) {
+		long l1 = System.currentTimeMillis();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String sql = "update member_" + customerName + " set score = " + newScore + " where id = " + id;
@@ -381,12 +397,14 @@ public class MemberService implements IMemberService{
 		m.score = newScore;
 		m.balanceMoney = member.getBalanceMoney();
 		
-		log.debug(" update member score "+ oldScore +" to " + newScore);
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + "ms consume, update " + customerName + ".member." + id + " score from "+ oldScore +" to " + newScore);
 		return new MemberResult(Result.OK, true, m);
 	}
 	
 	@Override
 	public MemberResult updateMemberBalance(String customerName, int id, double newBalance) {
+		long l1 = System.currentTimeMillis();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String sql = "update member_" + customerName + " set balanceMoney = " + newBalance + " where id = " + id;
@@ -431,12 +449,14 @@ public class MemberService implements IMemberService{
 		m.score = member.getScore();
 		m.balanceMoney = newBalance;
 		
-		log.debug("update member balance "+ oldBalance +" to " + newBalance);
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1)+"ms consume, update " + customerName +".member." + id + " balance from "+ oldBalance +" to " + newBalance);
 		return new MemberResult(Result.OK, true, m);
 	}
 	
 	@Override
 	public MemberResult memberRecharge(String customerName, int id, double rechargeValue) {
+		long l1 = System.currentTimeMillis();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String sql = "update member_" + customerName + " set balanceMoney = ? where id = " + id;
@@ -481,13 +501,14 @@ public class MemberService implements IMemberService{
 		m.id = id;
 		m.score = member.getScore();
 		m.balanceMoney = oldBalance + rechargeValue;
-		
-		log.debug("member recharge "+ oldBalance +" to " + (oldBalance + rechargeValue));
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + "ms consume, do " + customerName + ".member." + id + " recharge "+ rechargeValue +", new balance is " + (oldBalance + rechargeValue));
 		return new MemberResult(Result.OK, true, m);
 	}
 
 	@Override
 	public MemberResult deleteMember(String customerName, int id) {
+		long l1 = System.currentTimeMillis();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		String sql = "delete from member_" + customerName + " where id = " + id;
@@ -509,7 +530,8 @@ public class MemberService implements IMemberService{
 		} finally{
 			session.close();
 		}
-		log.debug("delete member  : " + m.getName());
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + "ms consume, delete "+customerName +".member by id : " + id + ",name : " + m.getName());
 		return new MemberResult(Result.OK, true);
 	}
 	
@@ -519,6 +541,7 @@ public class MemberService implements IMemberService{
 	@Override
 	public MemberResult recordMemberConsumption(String customerName, String memberCard, String memberPassword, double consumptionPrice, boolean byScore, 
 			double scorePerDollar, boolean byDeposit, String branchName) {
+		long l1 = System.currentTimeMillis();
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		Member m = queryMemberByCard(customerName, memberCard);
@@ -582,12 +605,27 @@ public class MemberService implements IMemberService{
 		} finally{
 			session.close();
 		}
-		log.debug("record member consumption : customerName = " + customerName + ", memberCard = " + memberCard + ", consumptionPrice = " + consumptionPrice + ", sql = " + sql);
-		return new MemberResult(Result.OK, true);
+		Member member = queryMemberByCard(customerName, memberCard);//reload new score and balance
+		MemberInfo mi = new MemberInfo();
+		mi.name = member.getName();
+		mi.memberCard = member.getMemberCard();
+		mi.address=member.getAddress();
+		mi.postCode=member.getAddress();
+		mi.telephone=member.getTelephone();
+		mi.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		mi.discountRate =member.getDiscountRate();
+		mi.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
+		mi.id = member.getId();
+		mi.score = member.getScore();
+		mi.balanceMoney = member.getBalanceMoney();
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + "ms consume, record "+customerName+".member consumption : customerName = " + customerName + ", memberCard = " + memberCard + ", consumptionPrice = " + consumptionPrice + ", sql = " + sql);
+		return new MemberResult(Result.OK, true, mi);
 	}
 
 	@Override
 	public ObjectListResult queryMemberBalance(String customerName, int id) {
+		long l1 = System.currentTimeMillis();
 		String sql = "select id, amount, date, newValue, place, type from member_balance_"+customerName + " where member_id = "+id;
 		Session session = null;
 		Transaction tx = null;
@@ -620,6 +658,8 @@ public class MemberService implements IMemberService{
 				mbi.memberId = id;
 				mbis.add(mbi);
 			}
+			long l2 = System.currentTimeMillis();
+			log.debug((l2 - l1) + "ms consume, query " + customerName + ".memberbalance by memberid : " + id); 
 			return new ObjectListResult(Result.OK, true, mbis);
 			
 		} catch(Exception e){
@@ -634,6 +674,7 @@ public class MemberService implements IMemberService{
 
 	@Override
 	public ObjectListResult queryMemberScore(String customerName, int id) {
+		long l1 = System.currentTimeMillis();
 		String sql = "select id, amount, date, newValue, place, type from member_score_"+customerName + " where member_id = "+id;
 		Session session = null;
 		Transaction tx = null;
@@ -666,6 +707,8 @@ public class MemberService implements IMemberService{
 				mbi.memberId = id;
 				mbis.add(mbi);
 			}
+			long l2 = System.currentTimeMillis();
+			log.debug((l2 - l1) + "ms consume, query " + customerName + ".memberscore by memberid : " + id); 
 			return new ObjectListResult(Result.OK, true, mbis);
 			
 		} catch(Exception e){
@@ -763,5 +806,46 @@ public class MemberService implements IMemberService{
 		}
 
 		return sb.toString();
+	}
+
+	@Override
+	public MemberResult updateMemberDiscountRate(String customerName, int id, double discountRate) {
+		long l1 = System.currentTimeMillis();
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		String sql = "update member_" + customerName + " set discountRate = " + discountRate + " where id = " + id;
+		Member member;
+		double oldDiscountRate=0;
+		try{
+			member = queryMemberById(customerName, id);
+			if (member == null)
+				return new MemberResult("cannot find member by id "+ id, false, null);
+			oldDiscountRate = member.getDiscountRate();
+			SQLQuery query = session.createSQLQuery(sql);
+			query.executeUpdate();
+			tx.commit();
+		} catch(Exception e){
+			tx.rollback();
+			log.error("sql = " + sql );
+			log.error("", e);
+			return new MemberResult(e.getMessage() + sql , false);
+		} finally{
+			session.close();
+		}
+		MemberInfo m = new MemberInfo();
+		m.name = member.getName();
+		m.memberCard = member.getMemberCard();
+		m.address=member.getAddress();
+		m.postCode=member.getAddress();
+		m.telephone=member.getTelephone();
+		m.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		m.discountRate =discountRate;
+		m.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
+		m.id = id;
+		m.score = member.getScore();
+		m.balanceMoney = member.getBalanceMoney();
+		long l2 = System.currentTimeMillis();
+		log.debug((l2 - l1) + "ms consume, update " + customerName +".member." + id + " discountRate from "+ oldDiscountRate +" to " + discountRate);
+		return new MemberResult(Result.OK, true, m);
 	}
 }
