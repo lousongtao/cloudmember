@@ -612,7 +612,7 @@ public class MemberService implements IMemberService{
 		mi.address=member.getAddress();
 		mi.postCode=member.getAddress();
 		mi.telephone=member.getTelephone();
-		mi.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		mi.birth = member.getBirth() == null ? null :ConstantValue.DFYMD.format(member.getBirth());
 		mi.discountRate =member.getDiscountRate();
 		mi.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
 		mi.id = member.getId();
@@ -838,7 +838,7 @@ public class MemberService implements IMemberService{
 		m.address=member.getAddress();
 		m.postCode=member.getAddress();
 		m.telephone=member.getTelephone();
-		m.birth = member.getBirth() == null ? "" :ConstantValue.DFYMD.format(member.getBirth());
+		m.birth = member.getBirth() == null ? null :ConstantValue.DFYMD.format(member.getBirth());
 		m.discountRate =discountRate;
 		m.createTime = ConstantValue.DFYMD.format(member.getCreateTime());
 		m.id = id;
