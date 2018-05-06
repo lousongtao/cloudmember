@@ -30,14 +30,6 @@
     </beans:property>
   </beans:bean>
 
-	
-  <!-- 配置MultipartResolver 用于文件上传 使用spring的CommosMultipartResolver -->  
-  <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"  
-        p:defaultEncoding="UTF-8"  
-        p:maxUploadSize="5242880"  
-        p:uploadTempDir="fileUpload"  >  
-  </beans:bean>
-
   
   <!-- Enables the Spring MVC @Controller programming model -->
   <annotation-driven />
@@ -78,7 +70,7 @@
     <beans:property name="packagesToScan">
       <beans:list>
         <beans:value>com.shuishou.cloudmember.account.models</beans:value>
-        
+        <beans:value>com.shuishou.cloudmember.member.models</beans:value>
         <beans:value>com.shuishou.cloudmember.customer.models</beans:value>
       </beans:list>
     </beans:property>

@@ -14,8 +14,6 @@ import com.shuishou.cloudmember.BaseController;
 import com.shuishou.cloudmember.ConstantValue;
 import com.shuishou.cloudmember.account.services.IPermissionService;
 import com.shuishou.cloudmember.member.services.IMemberService;
-import com.shuishou.cloudmember.member.views.MemberListResult;
-import com.shuishou.cloudmember.member.views.MemberResult;
 import com.shuishou.cloudmember.views.ObjectListResult;
 import com.shuishou.cloudmember.views.ObjectResult;
 
@@ -41,7 +39,7 @@ public class MemberController extends BaseController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/member/querymember", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberListResult queryMember(
+	public @ResponseBody ObjectListResult queryMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "memberCard", required = false, defaultValue = "") String memberCard,
 			@RequestParam(value = "name", required = false, defaultValue = "") String name, 
@@ -49,27 +47,27 @@ public class MemberController extends BaseController {
 			@RequestParam(value = "postCode", required = false, defaultValue = "") String postCode, 
 			@RequestParam(value = "telephone", required = false, defaultValue = "") String telephone ) throws Exception{
 		
-		MemberListResult result = memberService.queryMember(customerName, name, memberCard, address, postCode, telephone);
+		ObjectListResult result = memberService.queryMember(customerName, name, memberCard, address, postCode, telephone);
 		
 		return result;
 		
 	}
 	
 	@RequestMapping(value = "/member/querymemberhazily", method = {RequestMethod.POST, RequestMethod.GET})
-	public @ResponseBody MemberListResult queryMember(
+	public @ResponseBody ObjectListResult queryMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "key", required = true) String key) throws Exception{
-		MemberListResult result = memberService.queryMemberHazily(customerName, key);
+		ObjectListResult result = memberService.queryMemberHazily(customerName, key);
 		
 		return result;
 		
 	}
 	
 	@RequestMapping(value = "/member/queryallmember", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberListResult queryAllMember(
+	public @ResponseBody ObjectListResult queryAllMember(
 			@RequestParam(value = "customerName", required = true) String customerName) throws Exception{
 		@SuppressWarnings("rawtypes")
-		MemberListResult result = memberService.queryAllMember(customerName);
+		ObjectListResult result = memberService.queryAllMember(customerName);
 		
 		return result;
 		
@@ -90,7 +88,7 @@ public class MemberController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/member/addmember", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult addMember(
+	public @ResponseBody ObjectResult addMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "memberCard", required = true) String memberCard,
 			@RequestParam(value = "name", required = true) String name, 
@@ -105,19 +103,19 @@ public class MemberController extends BaseController {
 			birth = ConstantValue.DFYMD.parse(sBirth);
 		}
 		try{
-			MemberResult result = memberService.addMember(customerName, name, memberCard, address, postCode, telephone, birth, discountRate, password);
+			ObjectResult result = memberService.addMember(customerName, name, memberCard, address, postCode, telephone, birth, discountRate, password);
 		
 			return result;
 		} catch(Exception e){
 			log.error(ConstantValue.DFYMDHMS.format(new Date()));
 	        log.error("", e);
 	        e.printStackTrace();
-			return new MemberResult(e.getMessage()+"\n"+e.getCause(), false);
+			return new ObjectResult(e.getMessage()+"\n"+e.getCause(), false);
 		}
 	}
 	
 	@RequestMapping(value = "/member/updatemember", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult updateMember(
+	public @ResponseBody ObjectResult updateMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
 			@RequestParam(value = "memberCard", required = true) String memberCard,
@@ -132,57 +130,58 @@ public class MemberController extends BaseController {
 			birth = ConstantValue.DFYMD.parse(sBirth);
 		}
 		try{
-			MemberResult result = memberService.updateMember(customerName, id, name, memberCard, address, postCode, telephone, birth, discountRate);
+			ObjectResult result = memberService.updateMember(customerName, id, name, memberCard, address, postCode, telephone, birth, discountRate);
 		
 			return result;
 		} catch(Exception e){
 			log.error(ConstantValue.DFYMDHMS.format(new Date()));
 	        log.error("", e);
 	        e.printStackTrace();
-			return new MemberResult(e.getMessage()+"\n"+e.getCause(), false);
+			return new ObjectResult(e.getMessage()+"\n"+e.getCause(), false);
 		}
 	}
 	
 	@RequestMapping(value = "/member/updatememberscore", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult updateMemberScore(
+	public @ResponseBody ObjectResult updateMemberScore(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
 			@RequestParam(value = "newScore", required = true) double newScore) throws Exception{
-		MemberResult result = memberService.updateMemberScore(customerName, id, newScore);
+		ObjectResult result = memberService.updateMemberScore(customerName, id, newScore);
 		
 		return result;
 	}
 	
 	@RequestMapping(value = "/member/updatememberbalance", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult updateMemberBalance(
+	public @ResponseBody ObjectResult updateMemberBalance(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
 			@RequestParam(value = "newBalance", required = true) double newBalance) throws Exception{
-		MemberResult result = memberService.updateMemberBalance(customerName, id, newBalance);
+		ObjectResult result = memberService.updateMemberBalance(customerName, id, newBalance);
 		
 		return result;
 	}
 	
 	@RequestMapping(value = "/member/updatememberdiscountrate", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult updateMemberDiscountRate(
+	public @ResponseBody ObjectResult updateMemberDiscountRate(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
 			@RequestParam(value = "discountRate", required = true) double discountRate) throws Exception{
-		MemberResult result = memberService.updateMemberDiscountRate(customerName, id, discountRate);
+		ObjectResult result = memberService.updateMemberDiscountRate(customerName, id, discountRate);
 		
 		return result;
 	}
 	
 	@RequestMapping(value = "/member/memberrecharge", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult memberRecharge(
+	public @ResponseBody ObjectResult memberRecharge(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
-			@RequestParam(value = "rechargeValue", required = true) double rechargeValue) throws Exception{
-		return memberService.memberRecharge(customerName, id, rechargeValue);
+			@RequestParam(value = "rechargeValue", required = true) double rechargeValue,
+			@RequestParam(value = "branchName", required = false, defaultValue = "") String branchName) throws Exception{
+		return memberService.memberRecharge(customerName, id, rechargeValue, branchName);
 	}
 	
 	@RequestMapping(value = "/member/recordconsumption", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody MemberResult recordMemberConsumption(
+	public @ResponseBody ObjectResult recordMemberConsumption(
 			@RequestParam(value = "customerName", required = true) String customerName,
 			@RequestParam(value = "consumptionPrice", required = true) double consumptionPrice,
 			@RequestParam(value = "scorePerDollar", required = true) double scorePerDollar,
@@ -195,7 +194,7 @@ public class MemberController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/member/updatememberpassword", method = {RequestMethod.POST})
-	public @ResponseBody MemberResult updateMemberPassword(
+	public @ResponseBody ObjectResult updateMemberPassword(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
 			@RequestParam(value = "oldPassword", required = true) String oldPassword,
@@ -204,7 +203,7 @@ public class MemberController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/member/resetmemberpassword111111", method = {RequestMethod.POST})
-	public @ResponseBody MemberResult resetMemberPassword111111(
+	public @ResponseBody ObjectResult resetMemberPassword111111(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id) throws Exception{
 			return memberService.resetMemberPassword111111(customerName, id);

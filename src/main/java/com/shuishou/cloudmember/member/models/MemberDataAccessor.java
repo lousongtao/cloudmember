@@ -5,33 +5,53 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Lists;
 import com.shuishou.cloudmember.ConstantValue;
+import com.shuishou.cloudmember.InterceptorBuilder;
+import com.shuishou.cloudmember.MemberInterceptor;
 import com.shuishou.cloudmember.models.BaseDataAccessor;
+import com.shuishou.cloudmember.models.InterceptorSession;
 
 @Repository
 public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataAccessor {
-
 	@Override
 	public Member getMemberById(String customerName, int id) {
-		String sql = "select * from Member_"+customerName+" where id = "+id;
-		return (Member) sessionFactory.getCurrentSession().createQuery(sql).uniqueResult();
+		String hql = "from Member where id = "+id;
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		
+		return (Member) getSession().createQuery(hql).uniqueResult();
 	}
 	
 	@Override
 	public Member getMemberByCard(String customerName, String card) {
 		String hql = "from Member where memberCard = '"+card+"'";
-		return (Member) sessionFactory.getCurrentSession().createQuery(hql).uniqueResult();
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		return (Member) getSession().createQuery(hql).uniqueResult();
 	}
 
 	@Override
 	public List<Member> queryMember(String customerName, String name, String memberCard, String address,
 			String postCode, String telephone) {
-		Criteria c = sessionFactory.getCurrentSession().createCriteria(Member.class);
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		Criteria c = getSession().createCriteria(Member.class);
 		if (name != null && name.length() > 0)
 			c.add(Restrictions.ilike("name", "%" + name + "%"));
 		if (memberCard != null && memberCard.length() > 0)
@@ -47,14 +67,38 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	}
 	
 	@Override
+	public List<Member> queryMemberHazily(String customerName, String key){
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		Criteria c = getSession().createCriteria(Member.class);
+		Criterion cri = Restrictions.or(Restrictions.ilike("name", "%" + key + "%"),
+				Restrictions.ilike("memberCard", "%" + key + "%"));
+		c.add(Restrictions.or(cri, Restrictions.ilike("telephone", "%" + key + "%")));
+		return (List<Member>)c.list();
+	}
+	
+	@Override
 	public List<Member> queryAllMember(String customerName) {
 		String hql = "from Member";
-		return sessionFactory.getCurrentSession().createQuery(hql).list();
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		return getSession().createQuery(hql).list();
 	}
 
 	@Override
 	public int queryMemberCount(String customerName, String name, String memberCard, String address, String postCode,
 			String telephone) {
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
 		String countStmt = "select count(l) from Member l";
 		List<String> condList = Lists.newArrayList();
 		if (name != null && name.length() > 0)
@@ -73,18 +117,28 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 			else countStmt += " and ";
 			countStmt += condList.get(i);
 		}
-		Query query = sessionFactory.getCurrentSession().createQuery(countStmt);
+		Query query = getSession().createQuery(countStmt);
 		return (int)(long)query.uniqueResult();
 	}
 
 	@Override
 	public void save(String customerName, Member m) {
-		sessionFactory.getCurrentSession().save(m);
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		getSession().save(m);
 	}
 
 	@Override
 	public void delete(String customerName, Member m) {
-		sessionFactory.getCurrentSession().delete(m);
+		if (getInterceptorThreadLocal().get() == null){
+			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		}
+		getSession().delete(m);
 	}
 
 	@Override
@@ -133,6 +187,13 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 		sessionFactory.getCurrentSession().createSQLQuery(stmt_member).executeUpdate();
 		sessionFactory.getCurrentSession().createSQLQuery(stmt_member_consum).executeUpdate();
 		sessionFactory.getCurrentSession().createSQLQuery(stmt_member_score).executeUpdate();
+	}
+
+	@Override
+	public void setInterceptorSession(String customerName) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+		InterceptorSession is = new InterceptorSession(interceptor);
+		getInterceptorThreadLocal().set(is);
 	}
 
 }

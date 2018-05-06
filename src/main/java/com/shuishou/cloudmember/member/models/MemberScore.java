@@ -13,7 +13,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shuishou.cloudmember.ConstantValue;
 
 @Entity
 @Table(name = "member_score")
@@ -26,6 +28,7 @@ public class MemberScore {
 	@Column(nullable=false, scale = 2)
 	private double amount;
 	
+	@JsonFormat(pattern=ConstantValue.DATE_PATTERN_YMDHMS, timezone = "GMT+8:00")
 	@Column(nullable=false)
 	private Date date;
 	

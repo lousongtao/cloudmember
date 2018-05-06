@@ -1,12 +1,5 @@
 package com.shuishou.cloudmember.member.views;
 
-import java.util.Date;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.shuishou.cloudmember.ConstantValue;
-import com.shuishou.cloudmember.member.models.MemberConsumption;
-import com.shuishou.cloudmember.member.models.MemberScore;
 import com.shuishou.cloudmember.views.Result;
 
 /**

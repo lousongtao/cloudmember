@@ -16,39 +16,59 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shuishou.cloudmember.ConstantValue;
 
+@Entity
+@Table(name = "member")
 public class Member {
 
+	@Id
+	@GeneratedValue
+	@Column(nullable = false, unique = true)
 	private int id;
 	
+	@Column(nullable=false)
 	private String name;
 	
+	@Column(nullable=false, unique = true)
 	private String memberCard;
 	
+	@Column
 	private String address;
 	
+	@Column
 	private String postCode;
 	
+	@Column
 	private String telephone;
 	
+	@Column(scale = 2)
 	private double score;
 	
+	@Column(scale = 2)
 	private double balanceMoney;
 	
+	@Column(scale = 2)
 	private double discountRate = 1;
 	
+	@Column
 	private String password;
 	
+	@Column
 	@JsonFormat(pattern=ConstantValue.DATE_PATTERN_YMDHMS, timezone = "GMT+8:00")
 	private Date birth;
 	
+	@Column(nullable = false)
 	@JsonFormat(pattern=ConstantValue.DATE_PATTERN_YMDHMS, timezone = "GMT+8:00")
 	private Date createTime;
 	
-	private Date lastModifyTime;
-	
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="member")
+	@OrderBy("id")
 	private List<MemberScore> scores;
 	
-	private List<MemberConsumption> consumptions;
+	@JsonIgnore
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="member")
+	@OrderBy("id")
+	private List<MemberBalance> balances;
 
 	public int getId() {
 		return id;
@@ -146,14 +166,6 @@ public class Member {
 		this.createTime = createTime;
 	}
 
-	public Date getLastModifyTime() {
-		return lastModifyTime;
-	}
-
-	public void setLastModifyTime(Date lastModifyTime) {
-		this.lastModifyTime = lastModifyTime;
-	}
-
 	public List<MemberScore> getScores() {
 		return scores;
 	}
@@ -162,12 +174,12 @@ public class Member {
 		this.scores = scores;
 	}
 
-	public List<MemberConsumption> getConsumptions() {
-		return consumptions;
+	public List<MemberBalance> getBalances() {
+		return balances;
 	}
 
-	public void setConsumptions(List<MemberConsumption> consumptions) {
-		this.consumptions = consumptions;
+	public void setBalances(List<MemberBalance> balances) {
+		this.balances = balances;
 	}
 
 	@Override
