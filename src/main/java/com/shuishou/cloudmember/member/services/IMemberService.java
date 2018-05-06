@@ -10,20 +10,21 @@ import com.shuishou.cloudmember.views.ObjectResult;
 
 public interface IMemberService {
 
-	MemberResult addMember(String customerName, String name, String memberCard, String address, String postCode, String telephone, Date birth, double discountRate, String password);
-	MemberResult updateMember(String customerName, int id, String name, String memberCard, String address, String postCode, String telephone, Date birth,double discountRate);
-	MemberResult updateMemberScore(String customerName, int id, double newScore);
-	MemberResult updateMemberDiscountRate(String customerName, int id, double discountRate);
-	MemberResult updateMemberBalance(String customerName, int id, double newBalance);
-	MemberResult resetMemberPassword111111(String customerName, int id);
-	MemberResult updateMemberPassword(String customerName, int id, String oldPassword, String newPassword);
-	MemberResult memberRecharge(String customerName, int id, double recharge);
-	MemberResult deleteMember(String customerName, int id);
-	MemberListResult queryMember(String customerName, String name, String memberCard, String address, String postCode, String telephone);
-	MemberListResult queryMemberHazily(String customerName, String key);
-	MemberListResult queryAllMember(String customerName);
+	ObjectResult addMember(String customerName, String name, String memberCard, String address, String postCode, String telephone, Date birth, double discountRate, String password);
+	ObjectResult updateMember(String customerName, int id, String name, String memberCard, String address, String postCode, String telephone, Date birth,double discountRate);
+	ObjectResult updateMemberScore(String customerName, int id, double newScore);
+	ObjectResult updateMemberDiscountRate(String customerName, int id, double discountRate);
+	ObjectResult updateMemberBalance(String customerName, int id, double newBalance);
+	ObjectResult resetMemberPassword111111(String customerName, int id);
+	ObjectResult updateMemberPassword(String customerName, int id, String oldPassword, String newPassword);
+	ObjectResult memberRecharge(String customerName, int id, double recharge, String branchName);
+	ObjectResult deleteMember(String customerName, int id);
+	ObjectListResult queryMember(String customerName, String name, String memberCard, String address, String postCode, String telephone);
+	ObjectListResult queryMemberHazily(String customerName, String key);
+	ObjectListResult queryAllMember(String customerName);
 	ObjectListResult queryMemberBalance(String customerName, int id);
 	ObjectListResult queryMemberScore(String customerName, int id);
-	MemberResult recordMemberConsumption(String customerName, String memberCard, String memberPassword, double consumptionPrice, boolean byScore, double scorePerDollar, boolean byDeposit, String branchName);
+	ObjectResult recordMemberConsumption(String customerName, String memberCard, String memberPassword, double consumptionPrice, 
+			boolean byScore, double scorePerDollar, boolean byDeposit, String branchName);
 	
 }

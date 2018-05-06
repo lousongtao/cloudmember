@@ -5,17 +5,18 @@ import java.util.List;
 
 import org.hibernate.Session;
 
-public interface IMemberScoreDataAccessor {
+public interface IMemberBalanceDataAccessor {
 
-	List<MemberScore> getMemberScoreByMemberId(String customerName, int memberId);
+	List<MemberBalance> getMemberBalanceByMemberId(String customerName, int memberId);
 	
-	void save(String customerName, MemberScore ms);
+	void save(String customerName, MemberBalance mb);
 	
-	void delete(String customerName, MemberScore ms);
+	void delete(String customerName, MemberBalance mb);
 	
 	void deleteByMember(String customerName, int memberId);
 	
 	void closeSession();
+	
 	Session getSession();
 	void setInterceptorSession(String customerName);
 }

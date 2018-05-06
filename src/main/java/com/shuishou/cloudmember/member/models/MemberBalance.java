@@ -9,11 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shuishou.cloudmember.ConstantValue;
 
 @Entity
-@Table(name = "member_consumption")
-public class MemberConsumption {
+@Table(name = "member_balance")
+public class MemberBalance {
 	@Id
 	@GeneratedValue
 	@Column(nullable = false, unique = true)
@@ -28,6 +30,7 @@ public class MemberConsumption {
 	@Column(nullable=false, scale = 2)
 	private double amount;
 	
+	@JsonFormat(pattern=ConstantValue.DATE_PATTERN_YMDHMS, timezone = "GMT+8:00")
 	@Column(nullable=false)
 	private Date date;
 	
@@ -116,7 +119,7 @@ public class MemberConsumption {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MemberConsumption other = (MemberConsumption) obj;
+		MemberBalance other = (MemberBalance) obj;
 		if (id != other.id)
 			return false;
 		return true;
@@ -124,7 +127,7 @@ public class MemberConsumption {
 
 	@Override
 	public String toString() {
-		return "MemberConsumption [date=" + date + ", place=" + place + ", amount=" + amount + ", type=" + type + "]";
+		return "MemberBalance [date=" + date + ", place=" + place + ", amount=" + amount + ", type=" + type + "]";
 	}
 	
 	
