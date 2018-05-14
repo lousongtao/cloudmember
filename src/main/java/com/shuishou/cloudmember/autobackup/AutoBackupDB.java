@@ -3,6 +3,7 @@ package com.shuishou.cloudmember.autobackup;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -126,19 +127,19 @@ public class AutoBackupDB implements InitializingBean{
 	
 	//删除过老的文件
 	private void deleteOldFile(File directory){
-		Calendar c = Calendar.getInstance();
 		File[] dbfiles = directory.listFiles();
 		if (dbfiles != null && dbfiles.length > 0){
 			for (File file : dbfiles){
 				String filename = file.getName();
-				String[] stimes = filename.split("-");
-				if (stimes.length < 3)
-					continue;//unrecognized file
-				c.set(Calendar.YEAR, Integer.parseInt(stimes[0]));
-				c.set(Calendar.MONTH, Integer.parseInt(stimes[1]));
-				c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(stimes[2]));
-				if ((new Date().getTime() - c.getTime().getTime()) / (24*60*60*1000) > logKeepDays){
-					file.delete();
+				//file name like 20180514225150.sql
+				String timename = filename.split(".")[0];
+				try {
+					Date filetime = ConstantValue.DFYMDHMS_2.parse(timename);
+					if ((new Date().getTime() - filetime.getTime()) / (24*60*60*1000) > logKeepDays){
+						file.delete();
+					}
+				} catch (ParseException e) {
+					logger.error("", e);
 				}
 			}
 		}
