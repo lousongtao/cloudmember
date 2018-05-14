@@ -4,6 +4,8 @@
  */
 package com.shuishou.cloudmember.customer.services;
 
+import java.util.List;
+
 import com.shuishou.cloudmember.account.models.UserData;
 import com.shuishou.cloudmember.account.views.GetAccountsResult;
 import com.shuishou.cloudmember.account.views.LoginResult;
@@ -24,5 +26,5 @@ public interface ICustomerService {
   
 	ObjectResult stopCustomer(int operatorId, String name);
 
-
+	List<Customer> getAllCustomer();
 }

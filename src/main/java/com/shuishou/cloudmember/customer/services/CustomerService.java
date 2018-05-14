@@ -89,6 +89,12 @@ public class CustomerService implements ICustomerService {
 			return new ObjectResult("Cannot find customer by name " + name, false);
 		return new ObjectResult(Result.OK, true, c);
 	}
+	
+	@Override
+	@Transactional
+	public List<Customer> getAllCustomer(){
+		return customerDA.getAllCustomers();
+	}
 
 	@Override
 	@Transactional

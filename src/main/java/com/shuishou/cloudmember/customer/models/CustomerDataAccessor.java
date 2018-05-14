@@ -52,9 +52,10 @@ public class CustomerDataAccessor extends BaseDataAccessor implements ICustomerD
 	}
 
 	@Override
+//	@org.springframework.transaction.annotation.Transactional
 	public List<Customer> getAllCustomers() {
 		List<Customer> list = (List<Customer>) sessionFactory.getCurrentSession()
-				.createQuery("select u from UserData u").setCacheable(true).setCacheRegion("Query.Account").list();
+				.createQuery("select c from Customer c").list();
 		return list;
 	}
 

@@ -19,6 +19,7 @@ public class ConstantValue {
 	public static final String FORMAT_DOUBLE = "%.2f";
 	
 	public static final String DATABASE = "cloudmember";
+	public static final String CATEGORY_BACKUPDB = "backupDB";
 	
 	public static final String PERMISSION_QUERY_USER = "QUERY_USER";
 	public static final String PERMISSION_CREATE_USER = "CREATE_USER";
