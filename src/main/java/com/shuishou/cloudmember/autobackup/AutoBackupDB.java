@@ -1,8 +1,10 @@
 package com.shuishou.cloudmember.autobackup;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -49,9 +51,13 @@ public class AutoBackupDB implements InitializingBean{
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		final String osname = System.getProperty("os.name");
+		
 		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-		path = path.substring(1);//remove the first char '/'
-		final String dbdirPath = path + "../../../" + ConstantValue.CATEGORY_BACKUPDB;
+		if (osname.toLowerCase().startsWith("windows")){
+			path = path.substring(1);//remove the first char '/'
+		}
+		final String dbdirPath = path + "../../../../" + ConstantValue.CATEGORY_BACKUPDB;//数据库备份目录在Tomcat 目录下
 		File dbdir = new File(dbdirPath);
 		if (!dbdir.exists()){
 			dbdir.mkdirs();
@@ -69,13 +75,13 @@ public class AutoBackupDB implements InitializingBean{
 		mysqlDirectory = prop.getProperty("MySQLDirectory") + "\\bin";
 		
 		String dumpCmd = null;
-		String osname = System.getProperty("os.name");
+		
 		if (osname.toLowerCase().startsWith("windows")){
 			dumpCmd = "cmd.exe /c " + mysqlDirectory + "\\mysqldump";
 		} else if (osname.toLowerCase().startsWith("mac")) {
-			dumpCmd = "/bin/sh -c " + mysqlDirectory + "\\mysqldump";
+			dumpCmd = "mysqldump";
 		} else if (osname.toLowerCase().startsWith("linux")){
-			dumpCmd = "/bin/sh -c " + mysqlDirectory + "\\mysqldump";
+			dumpCmd = "mysqldump";
 		}
 		final String dumpCommand = dumpCmd;
 		String dumpParam = " -u"+username+" -p"+password+" cloudmember";
@@ -96,10 +102,17 @@ public class AutoBackupDB implements InitializingBean{
 				logger.debug("backup member data : "+ dump);
 				Runtime runtime = Runtime.getRuntime();
 				try {
-					runtime.exec(dump);
+					if (osname.toLowerCase().startsWith("windows")){
+						runtime.exec(dump);
+					} else if (osname.toLowerCase().startsWith("mac")) {
+						runtime.exec(new String[]{"/bin/sh", "-c", dump});
+					} else if (osname.toLowerCase().startsWith("linux")){
+						runtime.exec(new String[]{"/bin/sh", "-c", dump});
+					}
+					
 				} catch (IOException e) {
 					logger.error("", e);
-				}
+				} 
 			}
 			
 		}, memberTimerDelay, memberTimerRepeat);
@@ -132,7 +145,7 @@ public class AutoBackupDB implements InitializingBean{
 			for (File file : dbfiles){
 				String filename = file.getName();
 				//file name like 20180514225150.sql
-				String timename = filename.split(".")[0];
+				String timename = filename.split("\\.")[0];
 				try {
 					Date filetime = ConstantValue.DFYMDHMS_2.parse(timename);
 					if ((new Date().getTime() - filetime.getTime()) / (24*60*60*1000) > logKeepDays){

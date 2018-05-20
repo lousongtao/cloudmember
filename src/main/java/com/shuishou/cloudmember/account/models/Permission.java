@@ -10,7 +10,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table
+@Table(name="permission")
 public class Permission {
 	@Id
 	@GeneratedValue

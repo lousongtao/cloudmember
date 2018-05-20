@@ -14,7 +14,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name="User_Permission")
+@Table(name="user_permission")
 public class UserPermission {
 
 	@Id

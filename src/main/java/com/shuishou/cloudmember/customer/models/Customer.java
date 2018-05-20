@@ -24,7 +24,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table
+@Table(name="customer")
 public class Customer {
 
 	@Id
