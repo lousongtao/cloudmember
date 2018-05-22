@@ -51,7 +51,18 @@ public class AutoBackupDB implements InitializingBean{
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final String osname = System.getProperty("os.name");
+		//启动定时器, 定期备份会员数据
+		Timer timerMember = new Timer();
+		timerMember.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				doBackup();
+			}
+		}, memberTimerDelay, memberTimerRepeat);
+	}
+	
+	private void doBackup(){
+		String osname = System.getProperty("os.name");
 		
 		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 		if (osname.toLowerCase().startsWith("windows")){
@@ -88,35 +99,24 @@ public class AutoBackupDB implements InitializingBean{
 		for(Customer c : customers){
 			dumpParam += " member_" + c.getName();
 		}
-		final String fDumpParam = dumpParam;
 		
-		//启动定时器, 定期备份会员数据
-		Timer timerMember = new Timer();
-		timerMember.schedule(new TimerTask(){
-
-			@Override
-			public void run() {
-				//dump member data
-				String dbfile = dbdirPath + "/" +ConstantValue.DFYMDHMS_2.format(new Date()) + ".sql";
-				String dump = dumpCommand + fDumpParam + " > " + dbfile; 
-				logger.debug("backup member data : "+ dump);
-				Runtime runtime = Runtime.getRuntime();
-				try {
-					if (osname.toLowerCase().startsWith("windows")){
-						runtime.exec(dump);
-					} else if (osname.toLowerCase().startsWith("mac")) {
-						runtime.exec(new String[]{"/bin/sh", "-c", dump});
-					} else if (osname.toLowerCase().startsWith("linux")){
-						runtime.exec(new String[]{"/bin/sh", "-c", dump});
-					}
-					
-				} catch (IOException e) {
-					logger.error("", e);
-				} 
+		//dump member data
+		String dbfile = dbdirPath + "/" +ConstantValue.DFYMDHMS_2.format(new Date()) + ".sql";
+		String dump = dumpCommand + dumpParam + " > " + dbfile; 
+		logger.debug("backup member data : "+ dump);
+		Runtime runtime = Runtime.getRuntime();
+		try {
+			if (osname.toLowerCase().startsWith("windows")){
+				runtime.exec(dump);
+			} else if (osname.toLowerCase().startsWith("mac")) {
+				runtime.exec(new String[]{"/bin/sh", "-c", dump});
+			} else if (osname.toLowerCase().startsWith("linux")){
+				runtime.exec(new String[]{"/bin/sh", "-c", dump});
 			}
 			
-		}, memberTimerDelay, memberTimerRepeat);
-		
+		} catch (IOException e) {
+			logger.error("", e);
+		} 
 	}
 	
 	private void readConfig(){
