@@ -59,6 +59,20 @@ public class AutoBackupDB implements InitializingBean{
 				doBackup();
 			}
 		}, memberTimerDelay, memberTimerRepeat);
+		
+		//定义一个整库备份的计时器, 每天凌晨12点后开始备份; 由于前面已经备份了一次整库, 所以这里只是为个别晚上不关机的商家设计, 对于晚上会关机的商家, 这个地方应用不上
+		//根据当前时间, 计算下一天2点离现在的时间, 即为delay time
+		Calendar c = Calendar.getInstance();
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		Timer timerWhole = new Timer();
+		timerWhole.schedule(new TimerTask(){
+
+			@Override
+			public void run() {
+				doBackupWhole();
+			}
+		}, (25-hour) * 60 * 60 * 1000, //不确定具体时间, 只要凌晨后即可, 所以这里只考虑小时的间隔 
+				24 * 60 * 60 * 1000); //重复时间为24小时		
 	}
 	
 	private void doBackup(){
@@ -68,7 +82,7 @@ public class AutoBackupDB implements InitializingBean{
 		if (osname.toLowerCase().startsWith("windows")){
 			path = path.substring(1);//remove the first char '/'
 		}
-		final String dbdirPath = path + "../../../../" + ConstantValue.CATEGORY_BACKUPDB;//数据库备份目录在Tomcat 目录下
+		final String dbdirPath = path + "../../../" + ConstantValue.CATEGORY_BACKUPDB;//数据库备份目录在Tomcat/webapps/backupDB 目录下
 		File dbdir = new File(dbdirPath);
 		if (!dbdir.exists()){
 			dbdir.mkdirs();
@@ -101,7 +115,58 @@ public class AutoBackupDB implements InitializingBean{
 		}
 		
 		//dump member data
-		String dbfile = dbdirPath + "/" +ConstantValue.DFYMDHMS_2.format(new Date()) + ".sql";
+		String dbfile = dbdirPath + "/" +ConstantValue.DFYMDHMS_2.format(new Date()) + "-Member.sql";
+		String dump = dumpCommand + dumpParam + " > " + dbfile; 
+		logger.debug("backup member data : "+ dump);
+		Runtime runtime = Runtime.getRuntime();
+		try {
+			if (osname.toLowerCase().startsWith("windows")){
+				runtime.exec(dump);
+			} else if (osname.toLowerCase().startsWith("mac")) {
+				runtime.exec(new String[]{"/bin/sh", "-c", dump});
+			} else if (osname.toLowerCase().startsWith("linux")){
+				runtime.exec(new String[]{"/bin/sh", "-c", dump});
+			}
+			
+		} catch (IOException e) {
+			logger.error("", e);
+		} 
+	}
+	
+	private void doBackupWhole(){
+		String osname = System.getProperty("os.name");
+		
+		String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+		if (osname.toLowerCase().startsWith("windows")){
+			path = path.substring(1);//remove the first char '/'
+		}
+		final String dbdirPath = path + "../../../" + ConstantValue.CATEGORY_BACKUPDB;//数据库备份目录在Tomcat 目录下
+		File dbdir = new File(dbdirPath);
+		if (!dbdir.exists()){
+			dbdir.mkdirs();
+		}
+		
+		//检查旧的备份文件, 删除两周以前的
+		deleteOldFile(dbdir);
+		
+		readConfig();
+		
+		mysqlDirectory = prop.getProperty("MySQLDirectory") + "\\bin";
+		
+		String dumpCmd = null;
+		
+		if (osname.toLowerCase().startsWith("windows")){
+			dumpCmd = "cmd.exe /c " + mysqlDirectory + "\\mysqldump";
+		} else if (osname.toLowerCase().startsWith("mac")) {
+			dumpCmd = "mysqldump";
+		} else if (osname.toLowerCase().startsWith("linux")){
+			dumpCmd = "mysqldump";
+		}
+		final String dumpCommand = dumpCmd;
+		String dumpParam = " -u"+username+" -p"+password+" cloudmember";
+		
+		//dump member data
+		String dbfile = dbdirPath + "/" +ConstantValue.DFYMDHMS_2.format(new Date()) + "-Whole.sql";
 		String dump = dumpCommand + dumpParam + " > " + dbfile; 
 		logger.debug("backup member data : "+ dump);
 		Runtime runtime = Runtime.getRuntime();

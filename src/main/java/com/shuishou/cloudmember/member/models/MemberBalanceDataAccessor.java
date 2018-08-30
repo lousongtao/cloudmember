@@ -20,10 +20,14 @@ public class MemberBalanceDataAccessor extends BaseDataAccessor implements IMemb
 
 	@Override
 	public List<MemberBalance> getMemberBalanceByMemberId(String customerName, int memberId) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		String hql = "from MemberBalance ms where ms.member.id = " + memberId;
 		return getSession().createQuery(hql).list();
@@ -31,30 +35,42 @@ public class MemberBalanceDataAccessor extends BaseDataAccessor implements IMemb
 
 	@Override
 	public void save(String customerName, MemberBalance mc) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		getSession().save(mc);
 	}
 
 	@Override
 	public void delete(String customerName, MemberBalance mc) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		getSession().delete(mc);
 	}
 
 	@Override
 	public void deleteByMember(String customerName, int memberId) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		String hql = "delete from MemberBalance mc where mc.member.id = "+ memberId;
 		getSession().createQuery(hql).executeUpdate();

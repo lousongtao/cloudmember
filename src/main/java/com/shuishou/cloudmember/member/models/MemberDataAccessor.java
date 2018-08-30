@@ -23,10 +23,14 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	@Override
 	public Member getMemberById(String customerName, int id) {
 		String hql = "from Member where id = "+id;
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		
 		return (Member) getSession().createQuery(hql).uniqueResult();
@@ -35,10 +39,14 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	@Override
 	public Member getMemberByCard(String customerName, String card) {
 		String hql = "from Member where memberCard = '"+card+"'";
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		return (Member) getSession().createQuery(hql).uniqueResult();
 	}
@@ -46,10 +54,14 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	@Override
 	public List<Member> queryMember(String customerName, String name, String memberCard, String address,
 			String postCode, String telephone) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		Criteria c = getSession().createCriteria(Member.class);
 		if (name != null && name.length() > 0)
@@ -68,10 +80,14 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	
 	@Override
 	public List<Member> queryMemberHazily(String customerName, String key){
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		Criteria c = getSession().createCriteria(Member.class);
 		Criterion cri = Restrictions.or(Restrictions.ilike("name", "%" + key + "%"),
@@ -83,10 +99,14 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	@Override
 	public List<Member> queryAllMember(String customerName) {
 		String hql = "from Member";
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		return getSession().createQuery(hql).list();
 	}
@@ -94,10 +114,14 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	@Override
 	public int queryMemberCount(String customerName, String name, String memberCard, String address, String postCode,
 			String telephone) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		String countStmt = "select count(l) from Member l";
 		List<String> condList = Lists.newArrayList();
@@ -123,20 +147,28 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 
 	@Override
 	public void save(String customerName, Member m) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		getSession().save(m);
 	}
 
 	@Override
 	public void delete(String customerName, Member m) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		getSession().delete(m);
 	}

@@ -20,10 +20,14 @@ public class MemberScoreDataAccessor extends BaseDataAccessor implements IMember
 
 	@Override
 	public List<MemberScore> getMemberScoreByMemberId(String customerName, int memberId) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		String hql = "select ms from MemberScore ms where ms.member.id = " + memberId;
 		return getSession().createQuery(hql).list();
@@ -31,30 +35,42 @@ public class MemberScoreDataAccessor extends BaseDataAccessor implements IMember
 
 	@Override
 	public void save(String customerName, MemberScore ms) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		getSession().save(ms);
 	}
 
 	@Override
 	public void delete(String customerName, MemberScore ms) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		getSession().delete(ms);
 	}
 
 	@Override
 	public void deleteByMember(String customerName, int memberId) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
-			MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERSCORE, customerName);
 			InterceptorSession is = new InterceptorSession(interceptor);
 			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
 		}
 		String hql  = "delete from MemberScore where member.id = "+ memberId;
 		getSession().createQuery(hql).executeUpdate();
