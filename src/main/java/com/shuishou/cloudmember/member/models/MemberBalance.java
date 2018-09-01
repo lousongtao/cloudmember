@@ -47,6 +47,16 @@ public class MemberBalance {
 	@Column(nullable=false)
 	private double newValue;
 	
+	private String payway;
+	
+	public String getPayway() {
+		return payway;
+	}
+
+	public void setPayway(String payway) {
+		this.payway = payway;
+	}
+
 	public int getId() {
 		return id;
 	}

@@ -145,8 +145,9 @@ public class MemberController extends BaseController {
 	public @ResponseBody ObjectResult updateMemberScore(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
-			@RequestParam(value = "newScore", required = true) double newScore) throws Exception{
-		ObjectResult result = memberService.updateMemberScore(customerName, id, newScore);
+			@RequestParam(value = "newScore", required = true) double newScore,
+			@RequestParam(value = "branchName", required = false, defaultValue = "") String branchName) throws Exception{
+		ObjectResult result = memberService.updateMemberScore(customerName, id, newScore, branchName);
 		
 		return result;
 	}
@@ -155,8 +156,9 @@ public class MemberController extends BaseController {
 	public @ResponseBody ObjectResult updateMemberBalance(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
-			@RequestParam(value = "newBalance", required = true) double newBalance) throws Exception{
-		ObjectResult result = memberService.updateMemberBalance(customerName, id, newBalance);
+			@RequestParam(value = "newBalance", required = true) double newBalance,
+			@RequestParam(value = "branchName", required = false, defaultValue = "") String branchName) throws Exception{
+		ObjectResult result = memberService.updateMemberBalance(customerName, id, newBalance, branchName);
 		
 		return result;
 	}
@@ -165,8 +167,9 @@ public class MemberController extends BaseController {
 	public @ResponseBody ObjectResult updateMemberDiscountRate(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
-			@RequestParam(value = "discountRate", required = true) double discountRate) throws Exception{
-		ObjectResult result = memberService.updateMemberDiscountRate(customerName, id, discountRate);
+			@RequestParam(value = "discountRate", required = true) double discountRate,
+			@RequestParam(value = "branchName", required = false, defaultValue = "") String branchName) throws Exception{
+		ObjectResult result = memberService.updateMemberDiscountRate(customerName, id, discountRate, branchName);
 		
 		return result;
 	}
@@ -176,8 +179,25 @@ public class MemberController extends BaseController {
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "id", required = true) int id,
 			@RequestParam(value = "rechargeValue", required = true) double rechargeValue,
-			@RequestParam(value = "branchName", required = false, defaultValue = "") String branchName) throws Exception{
-		return memberService.memberRecharge(customerName, id, rechargeValue, branchName);
+			@RequestParam(value = "branchName", required = false, defaultValue = "") String branchName,
+			@RequestParam(value = "payway", required = true) String payway) throws Exception{
+		return memberService.memberRecharge(customerName, id, rechargeValue, branchName, payway);
+	}
+	
+	@RequestMapping(value = "/member/querymemberrecharge", method = {RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody ObjectListResult queryMemberRecharge(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "startTime", required = false, defaultValue = "") String sStartTime,
+			@RequestParam(value = "endTime", required = false, defaultValue = "") String sEndTime) throws Exception{
+		Date startTime = null;
+		Date endTime = null;
+		if (sStartTime != null && sStartTime.length() > 0){
+			startTime = ConstantValue.DFYMDHMS.parse(sStartTime);
+		}
+		if (sEndTime != null && sEndTime.length() > 0){
+			endTime = ConstantValue.DFYMDHMS.parse(sEndTime);
+		} 
+		return memberService.queryMemberRecharge(customerName, startTime, endTime);
 	}
 	
 	@RequestMapping(value = "/member/recordconsumption", method = {RequestMethod.GET, RequestMethod.POST})

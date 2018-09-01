@@ -9,6 +9,8 @@ public interface IMemberBalanceDataAccessor {
 
 	List<MemberBalance> getMemberBalanceByMemberId(String customerName, int memberId);
 	
+	List<MemberBalance> getMemberRecharge(String customerName, Date startTime, Date endTime);
+	
 	void save(String customerName, MemberBalance mb);
 	
 	void delete(String customerName, MemberBalance mb);

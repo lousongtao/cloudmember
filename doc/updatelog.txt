@@ -1,0 +1,3 @@
+20180901
+	1. add payway for member balance table;
+	2. add function for Member Recharge Query; 

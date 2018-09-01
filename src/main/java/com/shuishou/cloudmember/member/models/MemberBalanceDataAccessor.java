@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Lists;
+import com.shuishou.cloudmember.ConstantValue;
 import com.shuishou.cloudmember.InterceptorBuilder;
 import com.shuishou.cloudmember.MemberInterceptor;
 import com.shuishou.cloudmember.models.BaseDataAccessor;
@@ -81,6 +82,31 @@ public class MemberBalanceDataAccessor extends BaseDataAccessor implements IMemb
 		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 		InterceptorSession is = new InterceptorSession(interceptor);
 		getInterceptorThreadLocal().set(is);
+	}
+
+	@Override
+	public List<MemberBalance> getMemberRecharge(String customerName, Date startTime, Date endTime) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
+		if (getInterceptorThreadLocal().get() == null){
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
+		}
+		
+		String hql = "from MemberBalance mb where mb.type = " + ConstantValue.MEMBERDEPOSIT_RECHARGE;
+		if (startTime != null)
+			hql += " and mb.date >= :startTime";
+		if (endTime != null)
+			hql += " and mb.date <= :endTime";
+		Query query = getSession().createQuery(hql);
+		if (startTime != null)
+			query.setTimestamp("startTime", startTime);
+		if (endTime != null)
+			query.setTimestamp("endTime", endTime);
+		return query.list();
 	}
 
 

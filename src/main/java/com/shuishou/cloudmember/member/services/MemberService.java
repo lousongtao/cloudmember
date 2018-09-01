@@ -122,7 +122,7 @@ public class MemberService implements IMemberService{
 	}
 
 	@Override
-	public ObjectResult updateMemberScore(String customerName, int id, double newScore) {
+	public ObjectResult updateMemberScore(String customerName, int id, double newScore, String branchName) {
 		long l1 = System.currentTimeMillis();
 		memberScoreDA.setInterceptorSession(customerName);
 		Transaction tx = memberDA.getSession().beginTransaction();
@@ -142,7 +142,7 @@ public class MemberService implements IMemberService{
 			ms.setDate(new Date());
 			ms.setMember(m);
 			ms.setNewValue(newScore);
-			ms.setPlace("");
+			ms.setPlace(branchName);
 			ms.setType(ConstantValue.MEMBERSCORE_ADJUST);
 			
 			memberScoreDA.save(customerName, ms);
@@ -161,7 +161,7 @@ public class MemberService implements IMemberService{
 	}
 	
 	@Override
-	public ObjectResult updateMemberBalance(String customerName, int id, double newBalance) {
+	public ObjectResult updateMemberBalance(String customerName, int id, double newBalance, String branchName) {
 		long l1 = System.currentTimeMillis();
 		memberBalanceDA.setInterceptorSession(customerName);
 		Transaction tx = memberDA.getSession().beginTransaction();
@@ -179,7 +179,7 @@ public class MemberService implements IMemberService{
 			mb.setDate(new Date());
 			mb.setMember(m);
 			mb.setNewValue(newBalance);
-			mb.setPlace("");
+			mb.setPlace(branchName);
 			mb.setType(ConstantValue.MEMBERDEPOSIT_ADJUST);
 			memberBalanceDA.save(customerName, mb);
 			tx.commit();
@@ -197,7 +197,7 @@ public class MemberService implements IMemberService{
 	}
 	
 	@Override
-	public ObjectResult updateMemberDiscountRate(String customerName, int id, double discountRate) {
+	public ObjectResult updateMemberDiscountRate(String customerName, int id, double discountRate, String branchName) {
 		long l1 = System.currentTimeMillis();
 		memberDA.setInterceptorSession(customerName);
 		Transaction tx = memberDA.getSession().beginTransaction();
@@ -211,7 +211,7 @@ public class MemberService implements IMemberService{
 			memberDA.save(customerName, m);
 			tx.commit();
 			long l2 = System.currentTimeMillis();
-			log.debug((l2 - l1) + "ms consume, update " + customerName +".member.id " + id + " discountRate from "+ oldDiscountRate +" to " + discountRate);
+			log.debug((l2 - l1) + "ms consume, update " + customerName +".member.id " + id + " discountRate from "+ oldDiscountRate +" to " + discountRate + " at branch " + branchName);
 			
 			return new ObjectResult(Result.OK, true, m);
 		} catch (Exception e){
@@ -277,7 +277,7 @@ public class MemberService implements IMemberService{
 	}
 
 	@Override
-	public ObjectResult memberRecharge(String customerName, int id, double recharge, String branchName) {
+	public ObjectResult memberRecharge(String customerName, int id, double recharge, String branchName, String payway) {
 		long l1 = System.currentTimeMillis();
 		memberBalanceDA.setInterceptorSession(customerName);
 		Transaction tx = memberDA.getSession().beginTransaction();
@@ -297,6 +297,7 @@ public class MemberService implements IMemberService{
 			mb.setNewValue(m.getBalanceMoney());
 			mb.setPlace(branchName);
 			mb.setType(ConstantValue.MEMBERDEPOSIT_RECHARGE);
+			mb.setPayway(payway);
 			memberBalanceDA.save(customerName, mb);
 			tx.commit();
 			long l2 = System.currentTimeMillis();
@@ -408,6 +409,54 @@ public class MemberService implements IMemberService{
 	}
 
 	@Override
+	public ObjectListResult queryMemberRecharge(String customerName, Date startTime, Date endTime) {
+		try{
+			long l1 = System.currentTimeMillis();
+			memberBalanceDA.setInterceptorSession(customerName);
+			List<MemberBalance> mbs = memberBalanceDA.getMemberRecharge(customerName, startTime, endTime);
+			List<MemberBalanceInfo> mbis = new ArrayList<>();
+			if (mbs != null){
+				List<Member> members = memberDA.queryAllMember(customerName);
+				for (int i = 0; i < mbs.size(); i++) {
+					MemberBalance mb = mbs.get(i);
+					MemberBalanceInfo mbi = new MemberBalanceInfo();
+					mbi.id = mb.getId();
+					mbi.amount = mb.getAmount();
+					mbi.date = mb.getDate();
+					mbi.memberId = mb.getMember().getId();
+					mbi.newValue = mb.getNewValue();
+					mbi.place = mb.getPlace();
+					mbi.type = mb.getType();
+					mbi.payway = mb.getPayway();
+					for (int j = 0; j < members.size(); j++) {
+						if (mbi.memberId == members.get(j).getId()){
+							mbi.memberCard = members.get(j).getMemberCard();
+							mbi.memberName = members.get(j).getName();
+							break;
+						}
+					}
+					mbis.add(mbi);
+				}
+			}
+			long l2 = System.currentTimeMillis();
+			String sLog = (l2 - l1) + "ms consume, query MemberBalance "+customerName+".member from startTime = "
+					+ (startTime == null ? "" : ConstantValue.DFYMD.format(startTime)) + " to endTime = " 
+					+ (endTime == null ? "" : ConstantValue.DFYMD.format(endTime));
+			log.debug(sLog);
+			return new ObjectListResult(Result.OK, true, mbis, mbis.size());
+		} catch (Exception e){
+			String sLog = "query MemberBalance "+customerName+".member from startTime = "
+					+ (startTime == null ? "" : ConstantValue.DFYMD.format(startTime)) + " to endTime = " 
+					+ (endTime == null ? "" : ConstantValue.DFYMD.format(endTime));
+			log.error(sLog, e);
+			return new ObjectListResult(e.getMessage(), false, null);
+		} finally{
+			memberBalanceDA.closeSession();
+		}
+		
+	}
+	
+	@Override
 	public ObjectListResult queryMemberScore(String customerName, int id) {
 		try{
 			long l1 = System.currentTimeMillis();
@@ -436,7 +485,9 @@ public class MemberService implements IMemberService{
 			if (member == null){
 				throw new DataCheckException("cannot find member by card : " + memberCard + ", customerName : "+ customerName);
 			}
-			
+			if (memberPassword != null && !memberPassword.equals(member.getPassword())){
+				throw new DataCheckException("password is wrong");
+			}
 			Date time = new Date();
 			if (byScore && scorePerDollar > 0){
 				MemberScore ms = new MemberScore();
