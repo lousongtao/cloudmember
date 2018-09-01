@@ -200,6 +200,7 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 				+ "`place` varchar(255) NOT NULL,"
 				+ "`type` int(11) NOT NULL,"
 				+ "`member_id` int(11) DEFAULT NULL, "
+				+ "`payway` varchar(255) DEFAULT NULL, "
 				+ "PRIMARY KEY (`id`),"
 				+ "KEY `FK_consum_memberid_" + customerName + "` (`member_id`),"
 				+ "CONSTRAINT `FK_consum_memberid_"+customerName+"` FOREIGN KEY (`member_id`) REFERENCES `member_"+customerName+"` (`id`)"
