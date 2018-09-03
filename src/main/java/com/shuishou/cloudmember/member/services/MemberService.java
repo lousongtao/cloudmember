@@ -238,7 +238,7 @@ public class MemberService implements IMemberService{
 			tx.commit();
 			
 			log.debug("change member [id = " + id +"] password to 111111 for customer : "+ customerName);
-			return new ObjectResult(Result.OK, true);
+			return new ObjectResult(Result.OK, true, m);
 		} catch (Exception e){
 			tx.rollback();
 			log.error("change member [id = " + id +"] password to 111111 for customer : "+ customerName, e);
@@ -265,7 +265,7 @@ public class MemberService implements IMemberService{
 			memberDA.save(customerName, m);
 			tx.commit();
 			log.debug("change member [id = " + id +"] password for customer : "+ customerName);
-			return new ObjectResult(Result.OK, true);
+			return new ObjectResult(Result.OK, true, m);
 		} catch (Exception e){
 			tx.rollback();
 			log.error("change member [id = " + id +"] password for customer : "+ customerName, e);
@@ -314,22 +314,25 @@ public class MemberService implements IMemberService{
 	}
 
 	@Override
+	@Transactional
 	public ObjectResult deleteMember(String customerName, int id) {
 		long l1 = System.currentTimeMillis();
-		memberDA.setInterceptorSession(customerName);
-		Transaction tx = memberDA.getSession().beginTransaction();
+//		memberDA.setInterceptorSession(customerName);
+//		Transaction tx = memberDA.getSession().beginTransaction();
 		try{
-			Member m = memberDA.getMemberById(customerName, id);
-			if (m == null)
-				return new ObjectResult("cannot find member by id : "+ id + ", customerName : " + customerName, false, null);
 			
-			memberDA.delete(customerName, m);
-			tx.commit();
+//			Member m = memberDA.getMemberById(customerName, id);
+//			if (m == null)
+//				return new ObjectResult("cannot find member by id : "+ id + ", customerName : " + customerName, false, null);
+//			
+//			memberDA.delete(customerName, m);
+//			tx.commit();
+			memberDA.delete(customerName, id);
 			long l2 = System.currentTimeMillis();
-			log.debug((l2 - l1) + "ms consume, delete "+customerName +".member by id : " + id + ",name : " + m.getName());
+//			log.debug((l2 - l1) + "ms consume, delete "+customerName +".member by id : " + id + ",name : " + m.getName());
 			return new ObjectResult(Result.OK, true);
 		} catch (Exception e){
-			tx.rollback();
+//			tx.rollback();
 			log.error("delete "+customerName +".member by id : " + id, e);
 			return new ObjectResult(e.getMessage(), false, null);
 		} finally{

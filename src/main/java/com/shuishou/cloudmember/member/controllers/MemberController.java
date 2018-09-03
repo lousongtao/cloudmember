@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.shuishou.cloudmember.BaseController;
 import com.shuishou.cloudmember.ConstantValue;
-import com.shuishou.cloudmember.account.services.IPermissionService;
 import com.shuishou.cloudmember.member.services.IMemberService;
 import com.shuishou.cloudmember.views.ObjectListResult;
 import com.shuishou.cloudmember.views.ObjectResult;
@@ -20,9 +19,6 @@ import com.shuishou.cloudmember.views.ObjectResult;
 @Controller
 public class MemberController extends BaseController {
 	private Logger log = Logger.getLogger("MemberController");
-	
-	@Autowired
-	private IPermissionService permissionService;
 	
 	@Autowired
 	private IMemberService memberService;
@@ -38,6 +34,7 @@ public class MemberController extends BaseController {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/member/querymember", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody ObjectListResult queryMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
@@ -53,6 +50,7 @@ public class MemberController extends BaseController {
 		
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/member/querymemberhazily", method = {RequestMethod.POST, RequestMethod.GET})
 	public @ResponseBody ObjectListResult queryMember(
 			@RequestParam(value = "customerName", required = true) String customerName, 
@@ -63,16 +61,17 @@ public class MemberController extends BaseController {
 		
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/member/queryallmember", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody ObjectListResult queryAllMember(
 			@RequestParam(value = "customerName", required = true) String customerName) throws Exception{
-		@SuppressWarnings("rawtypes")
 		ObjectListResult result = memberService.queryAllMember(customerName);
 		
 		return result;
 		
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/member/querymemberscore", method = {RequestMethod.POST})
 	public @ResponseBody ObjectListResult queryMemberScore(
 			@RequestParam(value = "customerName", required = true) String customerName, 
@@ -80,6 +79,7 @@ public class MemberController extends BaseController {
 			return memberService.queryMemberScore(customerName, memberId);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/member/querymemberbalance", method = {RequestMethod.POST})
 	public @ResponseBody ObjectListResult queryMemberBalance(
 			@RequestParam(value = "customerName", required = true) String customerName, 
@@ -106,6 +106,20 @@ public class MemberController extends BaseController {
 			ObjectResult result = memberService.addMember(customerName, name, memberCard, address, postCode, telephone, birth, discountRate, password);
 		
 			return result;
+		} catch(Exception e){
+			log.error(ConstantValue.DFYMDHMS.format(new Date()));
+	        log.error("", e);
+	        e.printStackTrace();
+			return new ObjectResult(e.getMessage()+"\n"+e.getCause(), false);
+		}
+	}
+	
+	@RequestMapping(value = "/member/deletemember", method = {RequestMethod.POST})
+	public @ResponseBody ObjectResult updateMember(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "id", required = true) int id) throws Exception{
+		try{
+			return memberService.deleteMember(customerName, id);
 		} catch(Exception e){
 			log.error(ConstantValue.DFYMDHMS.format(new Date()));
 	        log.error("", e);
@@ -184,6 +198,7 @@ public class MemberController extends BaseController {
 		return memberService.memberRecharge(customerName, id, rechargeValue, branchName, payway);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/member/querymemberrecharge", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody ObjectListResult queryMemberRecharge(
 			@RequestParam(value = "customerName", required = true) String customerName, 

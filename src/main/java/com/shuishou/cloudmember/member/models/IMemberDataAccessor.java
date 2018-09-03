@@ -18,7 +18,7 @@ public interface IMemberDataAccessor {
 	
 	void save(String customerName, Member m);
 	
-	void delete(String customerName, Member m);
+	void delete(String customerName, int id);
 	
 	void createMemberTableByCustomer(String customerName);
 	

@@ -160,17 +160,27 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 	}
 
 	@Override
-	public void delete(String customerName, Member m) {
-		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
-		if (getInterceptorThreadLocal().get() == null){
-			InterceptorSession is = new InterceptorSession(interceptor);
-			getInterceptorThreadLocal().set(is);
-		} else {
-			//重置interceptor数据
-			InterceptorSession is = getInterceptorThreadLocal().get();
-			is.setInterceptor(interceptor);
-		}
-		getSession().delete(m);
+	public void delete(String customerName, int id) {
+		//使用interceptor并执行getSession().delete(member); 会报错
+		//org.hibernate.exception.GenericJDBCException: could not delete: [com.shuishou.cloudmember.member.models.Member#3]
+		//caused by
+		//org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Parameter index out of range (1 > number of parameters, which is 0).
+//		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+//		if (getInterceptorThreadLocal().get() == null){
+//			InterceptorSession is = new InterceptorSession(interceptor);
+//			getInterceptorThreadLocal().set(is);
+//		} else {
+//			//重置interceptor数据
+//			InterceptorSession is = getInterceptorThreadLocal().get();
+//			is.setInterceptor(interceptor);
+//		}
+//		getSession().delete(m);
+		String sql_deleteScore = "delete from member_score_" + customerName + " where member_id = " + id;
+		String sql_deleteBalance = "delete from member_balance_" + customerName + " where member_id = " + id;
+		String sql_deleteMember = "delete from member_" + customerName + " where id = " + id;
+		sessionFactory.getCurrentSession().createSQLQuery(sql_deleteScore).executeUpdate();
+		sessionFactory.getCurrentSession().createSQLQuery(sql_deleteBalance).executeUpdate();
+		sessionFactory.getCurrentSession().createSQLQuery(sql_deleteMember).executeUpdate();
 	}
 
 	@Override
@@ -184,10 +194,10 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 				+ "`discountRate` double DEFAULT '1', "
 				+ "`memberCard` varchar(255) NOT NULL,"
 				+ "`name` varchar(255) NOT NULL,"
+				+ "`password` varchar(255) DEFAULT NULL, "
 				+ "`postCode` varchar(255) DEFAULT NULL,"
 				+ "`score` double DEFAULT '0', "
 				+ "`telephone` varchar(255) DEFAULT NULL, "
-				+ "`password` varchar(255) DEFAULT NULL, "
 				+ "PRIMARY KEY (`id`), "
 				+ "UNIQUE KEY `UK_membercard_"+ customerName + "` (`memberCard`), "
 				+ "KEY `IDX_membername_"+ customerName + "` (`name`) "
