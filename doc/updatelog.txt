@@ -4,3 +4,6 @@
 	
 20180903
 	1. add function of delete member
+	
+20180905
+	1. add license validation.
