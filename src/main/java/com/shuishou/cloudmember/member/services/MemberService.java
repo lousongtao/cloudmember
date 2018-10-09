@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -30,6 +31,7 @@ import com.shuishou.cloudmember.member.views.MemberInfo;
 import com.shuishou.cloudmember.member.views.MemberListResult;
 import com.shuishou.cloudmember.member.views.MemberResult;
 import com.shuishou.cloudmember.member.views.MemberScoreInfo;
+import com.shuishou.cloudmember.member.views.MemberStatInfo;
 import com.shuishou.cloudmember.views.ObjectListResult;
 import com.shuishou.cloudmember.views.ObjectResult;
 import com.shuishou.cloudmember.views.Result;
@@ -412,11 +414,11 @@ public class MemberService implements IMemberService{
 	}
 
 	@Override
-	public ObjectListResult queryMemberRecharge(String customerName, Date startTime, Date endTime) {
+	public ObjectListResult queryMemberBalance(String customerName, Date startTime, Date endTime, String type) {
 		try{
 			long l1 = System.currentTimeMillis();
 			memberBalanceDA.setInterceptorSession(customerName);
-			List<MemberBalance> mbs = memberBalanceDA.getMemberRecharge(customerName, startTime, endTime);
+			List<MemberBalance> mbs = memberBalanceDA.getMemberBalance(customerName, startTime, endTime, type);
 			List<MemberBalanceInfo> mbis = new ArrayList<>();
 			if (mbs != null){
 				List<Member> members = memberDA.queryAllMember(customerName);
@@ -457,6 +459,62 @@ public class MemberService implements IMemberService{
 			memberBalanceDA.closeSession();
 		}
 		
+	}
+	
+	@Override
+	public ObjectListResult statMemberByTime(String customerName, Date startTime, Date endTime){
+		try{
+			long l1 = System.currentTimeMillis();
+			String type = ConstantValue.MEMBERBALANCE_QUERYTYPE_RECHARGE + ConstantValue.MEMBERBALANCE_QUERYTYPE_ADJUST + ConstantValue.MEMBERBALANCE_QUERYTYPE_CONSUME;
+			memberBalanceDA.setInterceptorSession(customerName);
+			List<MemberBalance> mbs = memberBalanceDA.getMemberBalance(customerName, startTime, endTime, type);
+			List<Member> members = memberDA.queryAllMember(customerName);
+			HashMap<Integer, Member> hmMember = new HashMap<>();//把member数据放入map中, 可快速查询
+			for (int i = 0; i < members.size(); i++) {
+				Member m = members.get(i);
+				hmMember.put(m.getId(), m);
+			}
+			HashMap<Integer, MemberStatInfo> hmStat = new HashMap<>();//key=member.id
+			if (mbs != null){
+				for (int i = 0; i < mbs.size(); i++) {
+					MemberBalance mb = mbs.get(i);
+					int memberid = mb.getMember().getId();
+					Member m = hmMember.get(memberid);
+					if (m == null)
+						continue;
+					MemberStatInfo ms = hmStat.get(memberid);
+					if (ms == null) {
+						ms = new MemberStatInfo(m.getMemberCard(), m.getName(), m.getCreateTime());
+						hmStat.put(memberid, ms);
+					}
+					if (mb.getType() == ConstantValue.MEMBERDEPOSIT_RECHARGE) {
+						ms.addRecharge(mb.getAmount());
+					}
+					if (mb.getType() == ConstantValue.MEMBERDEPOSIT_ADJUST) {
+						ms.addAdjust(mb.getAmount());
+					}
+					if (mb.getType() == ConstantValue.MEMBERDEPOSIT_CONSUM) {
+						ms.addConsume(mb.getAmount());
+					}
+				}
+			}
+			List<MemberStatInfo> msis = new ArrayList<>();
+			msis.addAll(hmStat.values());
+			long l2 = System.currentTimeMillis();
+			String sLog = (l2 - l1) + "ms consume, Statistics member for "+customerName+" from startTime = "
+					+ (startTime == null ? "" : ConstantValue.DFYMD.format(startTime)) + " to endTime = " 
+					+ (endTime == null ? "" : ConstantValue.DFYMD.format(endTime));
+			log.debug(sLog);
+			return new ObjectListResult(Result.OK, true, msis, msis.size());
+		} catch (Exception e){
+			String sLog = "Statistics member for "+customerName+" from startTime = "
+					+ (startTime == null ? "" : ConstantValue.DFYMD.format(startTime)) + " to endTime = " 
+					+ (endTime == null ? "" : ConstantValue.DFYMD.format(endTime));
+			log.error(sLog, e);
+			return new ObjectListResult(e.getMessage(), false, null);
+		} finally{
+			memberBalanceDA.closeSession();
+		}
 	}
 	
 	@Override

@@ -44,7 +44,7 @@ public class AutoBackupDB implements InitializingBean{
 	public static Properties prop = new Properties();
 	private String mysqlDirectory;
 	private String username = "root";
-	private String password = "root";
+	private String password = "Tianyuan1021";
 	
 	@Autowired
 	private ICustomerService customerService;

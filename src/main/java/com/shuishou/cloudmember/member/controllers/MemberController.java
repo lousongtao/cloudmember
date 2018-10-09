@@ -199,8 +199,25 @@ public class MemberController extends BaseController {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/member/querymemberrecharge", method = {RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody ObjectListResult queryMemberRecharge(
+	@RequestMapping(value = "/member/querymemberbalancebytime", method = {RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody ObjectListResult queryMemberBalanceByTime(
+			@RequestParam(value = "customerName", required = true) String customerName, 
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "startTime", required = false, defaultValue = "") String sStartTime,
+			@RequestParam(value = "endTime", required = false, defaultValue = "") String sEndTime) throws Exception{
+		Date startTime = null;
+		Date endTime = null;
+		if (sStartTime != null && sStartTime.length() > 0){
+			startTime = ConstantValue.DFYMDHMS.parse(sStartTime);
+		}
+		if (sEndTime != null && sEndTime.length() > 0){
+			endTime = ConstantValue.DFYMDHMS.parse(sEndTime);
+		} 
+		return memberService.queryMemberBalance(customerName, startTime, endTime, type);
+	}
+	
+	@RequestMapping(value = "/member/statmemberbytime", method = {RequestMethod.POST})
+	public @ResponseBody ObjectListResult statMemberByTime(
 			@RequestParam(value = "customerName", required = true) String customerName, 
 			@RequestParam(value = "startTime", required = false, defaultValue = "") String sStartTime,
 			@RequestParam(value = "endTime", required = false, defaultValue = "") String sEndTime) throws Exception{
@@ -212,7 +229,7 @@ public class MemberController extends BaseController {
 		if (sEndTime != null && sEndTime.length() > 0){
 			endTime = ConstantValue.DFYMDHMS.parse(sEndTime);
 		} 
-		return memberService.queryMemberRecharge(customerName, startTime, endTime);
+		return memberService.statMemberByTime(customerName, startTime, endTime);
 	}
 	
 	@RequestMapping(value = "/member/recordconsumption", method = {RequestMethod.GET, RequestMethod.POST})

@@ -23,8 +23,9 @@ public interface IMemberService {
 	ObjectListResult queryMemberHazily(String customerName, String key);
 	ObjectListResult queryAllMember(String customerName);
 	ObjectListResult queryMemberBalance(String customerName, int id);
-	ObjectListResult queryMemberRecharge(String customerName, Date startTime, Date endTime);
+	ObjectListResult queryMemberBalance(String customerName, Date startTime, Date endTime, String type);
 	ObjectListResult queryMemberScore(String customerName, int id);
+	ObjectListResult statMemberByTime(String customerName, Date startTime, Date endTime);
 	ObjectResult recordMemberConsumption(String customerName, String memberCard, String memberPassword, double consumptionPrice, 
 			boolean byScore, double scorePerDollar, boolean byDeposit, String branchName);
 	

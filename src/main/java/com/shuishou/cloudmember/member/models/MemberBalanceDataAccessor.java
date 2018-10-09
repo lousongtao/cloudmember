@@ -1,5 +1,6 @@
 package com.shuishou.cloudmember.member.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class MemberBalanceDataAccessor extends BaseDataAccessor implements IMemb
 	}
 
 	@Override
-	public List<MemberBalance> getMemberRecharge(String customerName, Date startTime, Date endTime) {
+	public List<MemberBalance> getMemberBalance(String customerName, Date startTime, Date endTime, String type) {
 		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBERBALANCE, customerName);
 		if (getInterceptorThreadLocal().get() == null){
 			InterceptorSession is = new InterceptorSession(interceptor);
@@ -95,8 +96,20 @@ public class MemberBalanceDataAccessor extends BaseDataAccessor implements IMemb
 			InterceptorSession is = getInterceptorThreadLocal().get();
 			is.setInterceptor(interceptor);
 		}
-		
-		String hql = "from MemberBalance mb where mb.type = " + ConstantValue.MEMBERDEPOSIT_RECHARGE;
+		ArrayList<Integer> types = new ArrayList<>(); 
+		if (type.indexOf(ConstantValue.MEMBERBALANCE_QUERYTYPE_ADJUST) >= 0)
+			types.add(ConstantValue.MEMBERDEPOSIT_ADJUST);
+		if (type.indexOf(ConstantValue.MEMBERBALANCE_QUERYTYPE_RECHARGE) >= 0)
+			types.add(ConstantValue.MEMBERDEPOSIT_RECHARGE);
+		if (type.indexOf(ConstantValue.MEMBERBALANCE_QUERYTYPE_CONSUME) >= 0)
+			types.add(ConstantValue.MEMBERDEPOSIT_CONSUM);
+		String hql = "from MemberBalance mb where mb.type in (";
+		for (int i = 0; i < types.size(); i++) {
+			if (i != 0)
+				hql += ",";
+			hql += types.get(i);
+		}
+		hql+=")";
 		if (startTime != null)
 			hql += " and mb.date >= :startTime";
 		if (endTime != null)
