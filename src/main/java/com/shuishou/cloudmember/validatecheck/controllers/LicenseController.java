@@ -2,6 +2,9 @@ package com.shuishou.cloudmember.validatecheck.controllers;
 
 import java.util.Date;
 
+import com.shuishou.cloudmember.ConstantValue;
+import com.shuishou.cloudmember.validatecheck.models.CustomerLicenseValidateHistory;
+import com.shuishou.cloudmember.views.ObjectListResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import com.shuishou.cloudmember.BaseController;
 import com.shuishou.cloudmember.validatecheck.services.ILicenseService;
 import com.shuishou.cloudmember.views.ObjectResult;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class LicenseController extends BaseController {
 
@@ -25,9 +30,10 @@ public class LicenseController extends BaseController {
 	
 	@RequestMapping(value = "/lisence/querylisence", method = { RequestMethod.GET, RequestMethod.POST })
 	public @ResponseBody ObjectResult queryLisence(
-			@RequestParam(value = "customerName", required = true) String customerName,
-			@RequestParam(value = "key", required = true) String key) throws Exception {
-		return licenseService.queryLicenseByCustomerName(customerName, key);
+            @RequestParam(value = "customerName", required = true) String customerName,
+            @RequestParam(value = "key", required = true) String key,
+            HttpServletRequest request) throws Exception {
+		return licenseService.queryLicenseByCustomerName(customerName, key, request);
 	}
 	
 	@RequestMapping(value = "/lisence/queryalllisence", method = { RequestMethod.GET, RequestMethod.POST })
@@ -41,5 +47,21 @@ public class LicenseController extends BaseController {
 			@RequestParam(value = "expireDate", required = true) Date expireDate) throws Exception {
 		return licenseService.save(customerName, expireDate);
 	}
-	
+
+	@RequestMapping(value="/lisence/queryvalidatehistory", method = {RequestMethod.GET, RequestMethod.POST})
+    public @ResponseBody ObjectListResult<CustomerLicenseValidateHistory> queryValidateHistory(
+            @RequestParam(value = "customerName", required = false) String customerName,
+            @RequestParam(value = "startTime", required = false) String sStartTime,
+            @RequestParam(value = "endTime", required = false) String sEndTime
+    ) throws Exception{
+	    Date startTime = null;
+	    Date endTime = null;
+	    if (sStartTime != null && sStartTime.length() > 0){
+	        startTime = ConstantValue.DFYMDHMS.parse(sStartTime);
+        }
+        if (sEndTime != null && sEndTime.length() > 0){
+            endTime = ConstantValue.DFYMDHMS.parse(sEndTime);
+        }
+	    return licenseService.queryLicenseValiateHistory(customerName, startTime, endTime);
+    }
 }

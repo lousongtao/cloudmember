@@ -42,5 +42,9 @@ public class ConstantValue {
 	public static final String MEMBERBALANCE_QUERYTYPE_CONSUME = "CONSUME";
 	public static final String MEMBERBALANCE_QUERYTYPE_RECHARGE = "RECHARGE";
 	public static final String MEMBERBALANCE_QUERYTYPE_ADJUST = "ADJUST";
+
+	public static final int CUSTOMERLICENSE_VALIDATEHISTORY_SUCCESS = 1; //license 验证成功
+    public static final int CUSTOMERLICENSE_VALIDATEHISTORY_WRONGKEY = 2; //license 验证, key 错误
+    public static final int CUSTOMERLICENSE_VALIDATEHISTORY_OTHEREXCEPTION = 3;//license 验证, 其他异常
 	
 }
