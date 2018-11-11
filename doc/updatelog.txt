@@ -1,5 +1,5 @@
 20181111
-    add history for customer license validation
+    add history of customer license validation into database
 
 20180905
 	1. add license validation.
