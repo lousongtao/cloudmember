@@ -85,35 +85,35 @@ public class LicenseService implements ILicenseService{
      * @return
      */
     private static String getIpAdrress(HttpServletRequest request) {
-        logger.debug("----------------------");
-        Enumeration enu = request.getHeaderNames();
-        while(enu.hasMoreElements()){
-            String s = (String)enu.nextElement();
-            logger.debug(s + " = " + request.getHeader(s));
-        }
-        logger.debug("----------------------");
+//        logger.debug("----------------------");
+//        Enumeration enu = request.getHeaderNames();
+//        while(enu.hasMoreElements()){
+//            String s = (String)enu.nextElement();
+//            logger.debug(s + " = " + request.getHeader(s));
+//        }
+//        logger.debug("----------------------");
         String ip = request.getHeader("x-forwarded-for");
-        logger.debug("x-forwarded-for = " + request.getHeader("x-forwarded-for"));
-        logger.debug("X-Forwarded-For = " + request.getHeader("X-Forwarded-For"));
+//        logger.debug("x-forwarded-for = " + request.getHeader("x-forwarded-for"));
+//        logger.debug("X-Forwarded-For = " + request.getHeader("X-Forwarded-For"));
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
-            logger.debug("Proxy-Client-IP = " + request.getHeader("Proxy-Client-IP"));
+//            logger.debug("Proxy-Client-IP = " + request.getHeader("Proxy-Client-IP"));
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
-            logger.debug("WL-Proxy-Client-IP = " + request.getHeader("WL-Proxy-Client-IP"));
+//            logger.debug("WL-Proxy-Client-IP = " + request.getHeader("WL-Proxy-Client-IP"));
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_CLIENT_IP");
-            logger.debug("HTTP_CLIENT_IP = " + request.getHeader("HTTP_CLIENT_IP"));
+//            logger.debug("HTTP_CLIENT_IP = " + request.getHeader("HTTP_CLIENT_IP"));
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-            logger.debug("HTTP_X_FORWARDED_FOR = " + request.getHeader("HTTP_X_FORWARDED_FOR"));
+//            logger.debug("HTTP_X_FORWARDED_FOR = " + request.getHeader("HTTP_X_FORWARDED_FOR"));
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
-            logger.debug("remote address = " + request.getRemoteAddr());
+//            logger.debug("remote address = " + request.getRemoteAddr());
         }
         return ip;
     }
