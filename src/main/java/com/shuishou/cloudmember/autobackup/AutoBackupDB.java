@@ -43,8 +43,8 @@ public class AutoBackupDB implements InitializingBean{
 	
 	public static Properties prop = new Properties();
 	private String mysqlDirectory;
-	private String username = "root";
-	private String password = "Tianyuan1021";
+	private String username = "jslink";
+	private String password = "JS-Link2018";
 	
 	@Autowired
 	private ICustomerService customerService;
@@ -189,7 +189,9 @@ public class AutoBackupDB implements InitializingBean{
 		try {
 			input = this.getClass().getClassLoader().getResourceAsStream(configFile);
 			prop.load(input);
-			
+			username = prop.getProperty("dbuser");
+			password = prop.getProperty("dbpassword");
+            logger.debug("load dbbackup parameter "+ username+password);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
