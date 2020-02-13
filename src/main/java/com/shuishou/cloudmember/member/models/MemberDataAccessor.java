@@ -95,7 +95,23 @@ public class MemberDataAccessor extends BaseDataAccessor implements IMemberDataA
 		c.add(Restrictions.or(cri, Restrictions.ilike("telephone", "%" + key + "%")));
 		return (List<Member>)c.list();
 	}
-	
+
+	@Override
+	public int updateDiscountRateByScore(String customerName, double targetRate, double fromScore, double toScore) {
+		MemberInterceptor interceptor = InterceptorBuilder.build(InterceptorBuilder.CLASS_MEMBER, customerName);
+		if (getInterceptorThreadLocal().get() == null){
+			InterceptorSession is = new InterceptorSession(interceptor);
+			getInterceptorThreadLocal().set(is);
+		} else {
+			//重置interceptor数据
+			InterceptorSession is = getInterceptorThreadLocal().get();
+			is.setInterceptor(interceptor);
+		}
+		String sql = "update member set discountrate = " + targetRate
+			+ " where id > 0 and score >= " + fromScore + " and score < "+ toScore;
+		return getSession().createSQLQuery(sql).executeUpdate();
+	}
+
 	@Override
 	public List<Member> queryAllMember(String customerName) {
 		String hql = "from Member";

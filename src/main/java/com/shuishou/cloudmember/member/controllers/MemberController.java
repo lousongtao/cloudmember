@@ -154,6 +154,25 @@ public class MemberController extends BaseController {
 			return new ObjectResult(e.getMessage()+"\n"+e.getCause(), false);
 		}
 	}
+
+	/**
+	 * 根据积分批量修改会员折扣,
+	 * @param customerName
+	 * @param targetRate 目标折扣
+	 * @param fromScore 积分下限
+	 * @param toScore 积分上限
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/member/updatememberdiscountbyscore", method = {RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody ObjectResult updateDiscountRateByScore(
+			@RequestParam(value = "customerName") String customerName,
+			@RequestParam(value="targetRate") double targetRate,
+			@RequestParam(value = "fromScore") double fromScore,
+			@RequestParam(value = "toScore") double toScore) throws Exception{
+		ObjectResult result = memberService.updateDiscountRateByScore(customerName, targetRate, fromScore, toScore);
+		return result;
+	}
 	
 	@RequestMapping(value = "/member/updatememberscore", method = {RequestMethod.GET, RequestMethod.POST})
 	public @ResponseBody ObjectResult updateMemberScore(

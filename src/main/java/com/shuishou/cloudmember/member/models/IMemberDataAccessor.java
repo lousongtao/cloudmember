@@ -13,6 +13,8 @@ public interface IMemberDataAccessor {
 	List<Member> queryMember(String customerName, String name, String memberCard, String address, String postCode, String telephone);
 	List<Member> queryAllMember(String customerName);
 	List<Member> queryMemberHazily(String customerName, String key);
+
+	int updateDiscountRateByScore(String customerName, double targetRate, double fromScore, double toScore);
 	
 	int queryMemberCount(String customerName, String name, String memberCard, String address, String postCode, String telephone);
 	

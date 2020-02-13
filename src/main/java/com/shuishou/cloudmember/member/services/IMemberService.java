@@ -28,5 +28,6 @@ public interface IMemberService {
 	ObjectListResult statMemberByTime(String customerName, Date startTime, Date endTime);
 	ObjectResult recordMemberConsumption(String customerName, String memberCard, String memberPassword, double consumptionPrice, 
 			boolean byScore, double scorePerDollar, boolean byDeposit, String branchName);
+	ObjectResult updateDiscountRateByScore( String customerName, double targetRate, double fromScore, double toScore );
 	
 }

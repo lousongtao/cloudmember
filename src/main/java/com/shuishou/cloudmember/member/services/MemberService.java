@@ -599,7 +599,29 @@ public class MemberService implements IMemberService{
 		}
 		
 	}
-	
+
+	/**
+	 * 根据积分批量修改会员折扣,
+	 * @param customerName
+	 * @param targetRate 目标折扣
+	 * @param fromScore 积分下限
+	 * @param toScore 积分上限
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public ObjectResult updateDiscountRateByScore(String customerName, double targetRate, double fromScore, double toScore ) {
+		try{
+			int rows = memberDA.updateDiscountRateByScore(customerName, targetRate, fromScore, toScore );
+			return new ObjectResult(Result.OK, true, rows);
+		} catch (Exception e){
+			log.error("batchUpdateDiscountRate "+customerName +".member by score : " + fromScore + ", " + toScore , e);
+			return new ObjectResult(e.getMessage(), false, null);
+		} finally{
+			memberDA.closeSession();
+		}
+	}
+
 	private String toSHA1(byte[] data) throws NoSuchAlgorithmException {
 		MessageDigest md = null;
 		try {
